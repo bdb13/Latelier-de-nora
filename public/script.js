@@ -14,11 +14,9 @@ let utilisateurs = []; // Depuis MongoDB
 // --- GESTION ACCÈS & AUTH ---
 function verifierAccesPages() {
     const pageActuelle = window.location.pathname;
-    // VIGILE : On bloque Suivi ET Commande si non connecté
     if ((pageActuelle.includes("suivi.html") || pageActuelle.includes("commande.html")) && !utilisateurConnecte) {
         window.location.href = "connexion.html";
     }
-    // VIGILE : On bloque l'Admin si ce n'est pas Nora
     if (pageActuelle.includes("admin.html") && (!utilisateurConnecte || utilisateurConnecte.email !== "latelierdenora.stg@gmail.com")) {
         window.location.href = "index.html";
     }
@@ -52,7 +50,6 @@ function seDeconnecter() {
     window.location.href = "index.html"; 
 }
 
-// SUPPRESSION DE COMPTE (MongoDB)
 function supprimerMonCompte() {
     if (confirm("⚠️ Êtes-vous sûr de vouloir supprimer votre compte définitivement ? Cette action est irréversible.")) {
         fetch(`/api/utilisateurs/${utilisateurConnecte.email}`, { method: 'DELETE' })
@@ -64,7 +61,6 @@ function supprimerMonCompte() {
     }
 }
 
-// MOT DE PASSE OUBLIÉ (MongoDB)
 function motDePasseOublie() {
     let emailSaisi = prompt("🔒 Réinitialisation : \nVeuillez entrer l'adresse email de votre compte :");
     if (!emailSaisi) return;
@@ -135,7 +131,6 @@ if (formInscription) {
         
         if (utilisateurs.find(u => u.email === email)) return alert("Cet email est déjà utilisé.");
         
-        // Enregistrement sur MongoDB
         fetch('/api/utilisateurs', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -147,7 +142,6 @@ if (formInscription) {
     });
 }
 
-// CORRECTION BUG : INVERSION D'AFFICHAGE
 function switchForm(versConnexion) {
     document.getElementById('bloc-connexion').style.display = versConnexion ? 'block' : 'none'; 
     document.getElementById('bloc-inscription').style.display = versConnexion ? 'none' : 'block';
@@ -286,12 +280,10 @@ async function rechercherAdresse(query) {
     } catch (error) { console.error("Erreur:", error); }
 }
 
-// --- SOUMISSION DE LA COMMANDE (VERS MONGODB) ---
 const formCmd = document.getElementById('form-commande');
 if (formCmd) {
     formCmd.addEventListener('submit', (e) => {
         e.preventDefault();
-        // Ultime vérification de sécurité (si l'utilisateur a contourné la redirection)
         if (!utilisateurConnecte) return alert("❌ Vous devez être connecté pour commander.");
         if (panier.length === 0) return alert("Votre panier est vide.");
 
@@ -354,7 +346,6 @@ function changerStatut(indexOuId, nouveauStatut) {
     });
 }
 
-// --- CHARGER DONNEES GLOBALES (MongoDB) ---
 async function chargerDonneesServeur() {
     try {
         const resCmd = await fetch('/api/commandes');
@@ -367,6 +358,27 @@ async function chargerDonneesServeur() {
     }
 }
 
+// NOUVEAU : Création magique du menu Mobile
+function setupMobileMenu() {
+    const header = document.querySelector('.header-fin');
+    const nav = document.querySelector('.header-fin nav');
+    
+    // Si on est bien sur une page avec le menu, et qu'on n'a pas encore créé le bouton
+    if (header && nav && !document.querySelector('.hamburger')) {
+        const burgerBtn = document.createElement('button');
+        burgerBtn.className = 'hamburger';
+        burgerBtn.innerHTML = '☰';
+        
+        // On l'insère juste avant la barre de navigation
+        header.insertBefore(burgerBtn, nav);
+        
+        burgerBtn.addEventListener('click', () => {
+            nav.classList.toggle('mobile-open');
+            burgerBtn.innerHTML = nav.classList.contains('mobile-open') ? '✕' : '☰';
+        });
+    }
+}
+
 // ==========================================
 // LANCEMENT GLOBAL 
 // ==========================================
@@ -375,6 +387,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     await chargerDonneesServeur();
 
     mettreAJourCompteur();
+    setupMobileMenu(); // <- Ajout du menu Mobile ici
+    
     if (document.getElementById('contenu-panier')) afficherPanier();
 
     if (utilisateurConnecte && document.getElementById('form-commande')) {
