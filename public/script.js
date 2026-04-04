@@ -23,6 +23,15 @@ function verifierAccesPages() {
 }
 verifierAccesPages();
 
+// NOUVEAU : Fonction pour ouvrir/fermer le sous-menu "Mon Compte" sur mobile
+function toggleSousMenu(e) {
+    e.preventDefault();
+    const dropdown = e.target.nextElementSibling;
+    if (dropdown && dropdown.classList.contains('dropdown-content')) {
+        dropdown.classList.toggle('show-sous-menu');
+    }
+}
+
 function mettreAJourInterfaceAuth() {
     const blocMenu = document.getElementById('menu-auth-dynamique');
     if (!blocMenu) return;
@@ -30,9 +39,11 @@ function mettreAJourInterfaceAuth() {
         let prenom = utilisateurConnecte.nom.split(' ')[0];
         let menuAdmin = utilisateurConnecte.email === "latelierdenora.stg@gmail.com" 
             ? `<a href="admin.html" style="color: red; font-weight: bold;">⚙️ Espace Admin</a>` : '';
+        
+        // J'ai ajouté onclick="toggleSousMenu(event)" sur le bouton profil
         blocMenu.innerHTML = `
             <div class="menu-profil">
-                <button class="bouton-profil">👤 ${prenom} ▼</button>
+                <button class="bouton-profil" onclick="toggleSousMenu(event)">👤 ${prenom} ▼</button>
                 <div class="dropdown-content">
                     <a href="suivi.html">📦 Mes commandes</a>
                     <a href="#" onclick="seDeconnecter()">🚪 Déconnexion</a>
@@ -358,18 +369,15 @@ async function chargerDonneesServeur() {
     }
 }
 
-// NOUVEAU : Création magique du menu Mobile
 function setupMobileMenu() {
     const header = document.querySelector('.header-fin');
     const nav = document.querySelector('.header-fin nav');
     
-    // Si on est bien sur une page avec le menu, et qu'on n'a pas encore créé le bouton
     if (header && nav && !document.querySelector('.hamburger')) {
         const burgerBtn = document.createElement('button');
         burgerBtn.className = 'hamburger';
         burgerBtn.innerHTML = '☰';
         
-        // On l'insère juste avant la barre de navigation
         header.insertBefore(burgerBtn, nav);
         
         burgerBtn.addEventListener('click', () => {
@@ -387,7 +395,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await chargerDonneesServeur();
 
     mettreAJourCompteur();
-    setupMobileMenu(); // <- Ajout du menu Mobile ici
+    setupMobileMenu(); 
     
     if (document.getElementById('contenu-panier')) afficherPanier();
 
