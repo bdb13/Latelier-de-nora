@@ -273,3 +273,23 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { background-color: 
     
     .admin-stats { flex-direction: column; gap: 15px; }
 }
+/* CORRECTION DES BOUTONS D'AJOUT AU PANIER (MOBILE UNIQUEMENT) */
+@media (max-width: 768px) {
+    .action-produit {
+        flex-direction: column;
+        width: 100%;
+        gap: 15px;
+    }
+    .selecteur-qte {
+        width: 100%;
+        justify-content: center;
+    }
+    .btn-qte {
+        padding: 12px 25px; /* On grossit la zone pour le doigt */
+    }
+    .action-produit .bouton {
+        width: 100%;
+        text-align: center;
+        box-sizing: border-box;
+    }
+}
