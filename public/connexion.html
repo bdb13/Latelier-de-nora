@@ -1,69 +1,81 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Connexion - L'atelier De NORA</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - L'atelier de NORA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body class="catalogue-bg">
-  
-  <header class="header-fin">
-    <a href="index.html" class="logo-titre">
-      <span class="script">L'atelier De</span> <span class="serif">NORA</span>
-    </a>
-    <nav style="display: flex; align-items: center;">
-      <a href="index.html">Accueil</a>
-      <a href="catalogue.html">Nos Douceurs</a>
-      <a href="panier.html">Mon Panier</a>
-      <span id="menu-auth-dynamique"></span>
-    </nav>
-  </header>
 
-  <main>
-    <section id="bloc-connexion" class="connexion-container">
-      <h2 style="font-family: 'Playfair Display', serif; color: var(--pine-green);">Content de vous revoir !</h2>
-      
-      <button class="btn-social google" onclick="alerteSociale('Google')">Continuer avec Google (Bientôt)</button>
-      <button class="btn-social facebook" onclick="alerteSociale('Facebook')">Continuer avec Facebook (Bientôt)</button>
-      
-      <div class="separateur">OU</div>
+    <header class="header-fin">
+        <a href="index.html" class="logo-titre">
+            <span class="script">L'atelier De</span> <span class="serif">NORA</span>
+        </a>
+        <nav style="display: flex; align-items: center;">
+            <a href="index.html">Accueil</a>
+            <a href="catalogue.html">Nos Douceurs</a>
+            <a href="panier.html">Mon Panier</a>
+        </nav>
+    </header>
 
-      <form id="form-connexion">
-        <div class="groupe-champ">
-          <input type="email" id="email-connexion" placeholder="Votre adresse email" required>
-        </div>
-        <div class="groupe-champ">
-          <input type="password" id="mdp-connexion" placeholder="Mot de passe" required>
-        </div>
-        <button type="submit" class="bouton" style="width: 100%;">Se connecter</button>
-      </form>
+    <main style="padding: 40px 20px;">
+        <div class="connexion-container" style="background: white; border: 2px solid var(--gold-accent); max-width: 450px; margin: 40px auto; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center;">
+            
+            <img src="./images/bah.jpg" alt="Logo" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 20px; border: 2px solid var(--gold-accent);">
+            
+            <div id="bloc-connexion">
+                <h2 style="font-family: 'Playfair Display', serif; color: var(--pine-green); margin-bottom: 25px;">Bon retour !</h2>
+                
+                <form id="form-connexion">
+                    <div class="groupe-champ">
+                        <input type="email" id="email-connexion" placeholder="Votre adresse Email" required style="text-align: center;">
+                    </div>
+                    <div class="groupe-champ" style="margin-bottom: 10px;">
+                        <input type="password" id="mdp-connexion" placeholder="Votre mot de passe" required style="text-align: center;">
+                    </div>
+                    
+                    <div style="text-align: right; margin-bottom: 20px;">
+                        <a href="#" onclick="motDePasseOublie()" style="color: var(--gold-accent); font-size: 0.9rem; text-decoration: none;">Mot de passe oublié ?</a>
+                    </div>
 
-      <p style="margin-top: 20px;">Pas encore de compte ? <a href="#" onclick="switchForm(true)" style="color: var(--gold-accent); font-weight: bold;">S'inscrire</a></p>
-    </section>
+                    <button type="submit" class="bouton" style="width: 100%; font-size: 1.1rem; padding: 12px;">Se connecter</button>
+                </form>
 
-    <section id="bloc-inscription" class="connexion-container" style="display: none;">
-      <h2 style="font-family: 'Playfair Display', serif; color: var(--pine-green);">Créer un compte</h2>
-      
-      <form id="form-inscription">
-        <div class="groupe-champ">
-          <input type="text" id="nom-inscr" placeholder="Nom et Prénom" required>
-        </div>
-        <div class="groupe-champ">
-          <input type="tel" id="tel-inscr" placeholder="Numéro de téléphone (ex: 0612345678)" required>
-        </div>
-        <div class="groupe-champ">
-          <input type="email" id="email-inscr" placeholder="Adresse email" required>
-        </div>
-        <div class="groupe-champ">
-          <input type="password" id="mdp-inscr" placeholder="Mot de passe" required>
-        </div>
-        <button type="submit" class="bouton" style="width: 100%;">S'inscrire</button>
-      </form>
+                <div class="separateur">OU</div>
+                
+                <button class="btn-social google">Continuer avec Google</button>
+                <button class="btn-social facebook">Continuer avec Facebook</button>
 
-      <p style="margin-top: 20px;">Déjà membre ? <a href="#" onclick="switchForm(false)" style="color: var(--gold-accent); font-weight: bold;">Se connecter</a></p>
-    </section>
-  </main>
+                <p style="margin-top: 25px; color: #555;">Nouveau ici ? <a href="#" onclick="switchForm(false)" style="color: var(--pine-green); font-weight: bold; text-decoration: none;">Créer un compte</a></p>
+            </div>
 
-  <script src="script.js"></script>
+            <div id="bloc-inscription" style="display: none;">
+                <h2 style="font-family: 'Playfair Display', serif; color: var(--pine-green); margin-bottom: 25px;">Créer mon compte</h2>
+                
+                <form id="form-inscription">
+                    <div class="groupe-champ">
+                        <input type="text" id="nom-inscr" placeholder="Nom et Prénom" required style="text-align: center;">
+                    </div>
+                    <div class="groupe-champ">
+                        <input type="tel" id="tel-inscr" placeholder="Numéro de téléphone" required style="text-align: center;">
+                    </div>
+                    <div class="groupe-champ">
+                        <input type="email" id="email-inscr" placeholder="Adresse Email" required style="text-align: center;">
+                    </div>
+                    <div class="groupe-champ">
+                        <input type="password" id="mdp-inscr" placeholder="Créer un mot de passe" required style="text-align: center;">
+                    </div>
+                    <button type="submit" class="bouton" style="width: 100%; font-size: 1.1rem; padding: 12px;">S'inscrire</button>
+                </form>
+
+                <p style="margin-top: 25px; color: #555;">Déjà client ? <a href="#" onclick="switchForm(true)" style="color: var(--pine-green); font-weight: bold; text-decoration: none;">Se connecter</a></p>
+            </div>
+            
+        </div>
+    </main>
+
+    <script src="script.js"></script>
 </body>
 </html>
