@@ -1,18 +1,13 @@
 {
-  "name": "app-nora",
+  "name": "atelier-de-nora",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Serveur pour l'Atelier",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
-    "cors": "^2.8.6",
-    "dotenv": "^17.4.0",
-    "express": "^5.2.1"
+    "express": "^4.18.2",
+    "mongoose": "^8.0.0"
   }
 }
