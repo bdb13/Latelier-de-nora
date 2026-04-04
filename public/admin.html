@@ -66,29 +66,21 @@
     <script>
         let dateAffichage = new Date();
 
-        // On attend que script.js ait fini de charger les commandes depuis MongoDB
         async function rafraichirAdmin() {
-            // Force le rechargement depuis le serveur
             const res = await fetch('/api/commandes');
             commandes = await res.json();
-            
             genererStats();
             genererCalendrier();
             genererListeCommandes();
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(rafraichirAdmin, 500); // Petit délai pour laisser MongoDB répondre
+            setTimeout(rafraichirAdmin, 500); 
         });
 
         function genererStats() {
-            let caTotal = 0;
-            let aPreparer = 0;
-            commandes.forEach(c => {
-                caTotal += (c.total || 0);
-                if(c.statut !== 'prete') aPreparer++;
-            });
-            
+            let caTotal = 0; let aPreparer = 0;
+            commandes.forEach(c => { caTotal += (c.total || 0); if(c.statut !== 'prete') aPreparer++; });
             document.getElementById('admin-stats').innerHTML = `
                 <div class="stat-card"><h3>Total Commandes</h3><div class="value">${commandes.length}</div></div>
                 <div class="stat-card"><h3>À Préparer</h3><div class="value" style="color: var(--status-orange)">${aPreparer}</div></div>
@@ -96,26 +88,20 @@
             `;
         }
 
-        function changerMois(direction) {
-            dateAffichage.setMonth(dateAffichage.getMonth() + direction);
-            genererCalendrier();
-        }
+        function changerMois(direction) { dateAffichage.setMonth(dateAffichage.getMonth() + direction); genererCalendrier(); }
 
         function scrollToCommande(idCmd) {
             const carte = document.getElementById('cmd-' + idCmd);
             if(carte) {
                 carte.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                carte.classList.remove('highlight-focus');
-                void carte.offsetWidth; 
                 carte.classList.add('highlight-focus');
+                setTimeout(() => carte.classList.remove('highlight-focus'), 2000);
             }
         }
 
         function genererCalendrier() {
             const calContainer = document.getElementById('admin-calendar');
-            let annee = dateAffichage.getFullYear();
-            let mois = dateAffichage.getMonth();
-
+            let annee = dateAffichage.getFullYear(); let mois = dateAffichage.getMonth();
             document.getElementById('titre-mois').innerText = dateAffichage.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
 
             let premierJourMois = new Date(annee, mois, 1);
@@ -129,55 +115,32 @@
             for(let jour = 1; jour <= nbJours; jour++) {
                 let dateStr = `${annee}-${String(mois + 1).padStart(2, '0')}-${String(jour).padStart(2, '0')}`;
                 let cmdsDuJour = commandes.filter(c => c.date === dateStr);
-                let aDesCommandes = cmdsDuJour.length > 0;
                 let nomJour = new Date(annee, mois, jour).toLocaleDateString('fr-FR', {weekday: 'short', day: 'numeric'});
-                
-                let pastillesHTML = '';
-                if(aDesCommandes) {
-                    cmdsDuJour.forEach(cmd => {
-                        let prenom = cmd.nom ? cmd.nom.split(' ')[0] : 'Client';
-                        pastillesHTML += `<div class="pastille-cmd" onclick="scrollToCommande('${cmd.id}')">📦 ${prenom}</div>`;
-                    });
-                } else { pastillesHTML = '<span style="color:#ccc; font-size:0.8rem;">-</span>'; }
-
-                calHTML += `
-                    <div class="calendar-day ${aDesCommandes ? 'has-order' : ''}">
-                        <div class="date-jour" style="font-weight:${aDesCommandes?'bold':'normal'}">${nomJour}</div>
-                        <div>${pastillesHTML}</div>
-                    </div>`;
+                let pastillesHTML = cmdsDuJour.map(cmd => `<div class="pastille-cmd" onclick="scrollToCommande('${cmd.id}')">📦 ${cmd.nom.split(' ')[0]}</div>`).join('') || '-';
+                calHTML += `<div class="calendar-day ${cmdsDuJour.length > 0 ? 'has-order' : ''}"><div class="date-jour">${nomJour}</div><div>${pastillesHTML}</div></div>`;
             }
             calContainer.innerHTML = calHTML;
         }
 
         function supprimerCommandeAdmin(id) {
-            if(confirm("⚠️ Supprimer définitivement cette commande ?")) {
-                fetch(`/api/commandes/${id}`, { method: 'DELETE' })
-                .then(() => {
-                    alert("🗑️ Commande effacée.");
-                    rafraichirAdmin();
-                });
+            if(confirm("⚠️ Supprimer ?")) {
+                fetch(`/api/commandes/${id}`, { method: 'DELETE' }).then(() => rafraichirAdmin());
             }
         }
 
         function genererListeCommandes() {
             const ordersContainer = document.getElementById('admin-orders');
-            if(commandes.length === 0) {
-                ordersContainer.innerHTML = "<p style='text-align:center; padding:40px;'>Aucune commande dans la base de données.</p>";
-                return;
-            }
+            if(commandes.length === 0) { ordersContainer.innerHTML = "<p>Vide.</p>"; return; }
             let triees = [...commandes].sort((a,b) => new Date(a.date) - new Date(b.date));
-            let html = '';
-            triees.forEach(cmd => {
+            ordersContainer.innerHTML = triees.map(cmd => {
                 let badge = cmd.statut === 'recu' ? 'statut-rouge' : (cmd.statut === 'preparation' ? 'statut-orange' : 'statut-vert');
-                html += `
+                return `
                 <div class="order-card" id="cmd-${cmd.id}">
                     <div class="order-info">
                         <h4>Commande ${cmd.id} <span class="order-badge ${badge}">${cmd.statut.toUpperCase()}</span></h4>
-                        <p>👤 <b>${cmd.nom}</b> (${cmd.tel})</p>
-                        <p>📅 <b>Pour le :</b> ${new Date(cmd.date).toLocaleDateString('fr-FR')}</p>
-                        <p>📦 <b>${cmd.methode === 'livraison' ? '🚚 Livraison' : '🛍️ Retrait Stand'}</b></p>
+                        <p>👤 <b>${cmd.nom}</b></p>
+                        <p>📅 <b>Le :</b> ${new Date(cmd.date).toLocaleDateString('fr-FR')}</p>
                         <p>🛒 <b>Articles :</b> ${cmd.articles.map(a => `${a.quantite}x ${a.nom}`).join(', ')}</p>
-                        <p style="color: var(--gold-accent); font-weight: bold; font-size: 1.2rem;">Total : ${cmd.total.toFixed(2)} €</p>
                     </div>
                     <div style="width: 200px;">
                         <select class="select-statut" onchange="changerStatut('${cmd.id}', this.value)">
@@ -185,11 +148,10 @@
                             <option value="preparation" ${cmd.statut === 'preparation' ? 'selected' : ''}>🟠 Préparation</option>
                             <option value="prete" ${cmd.statut === 'prete' ? 'selected' : ''}>🟢 Prête</option>
                         </select>
-                        <button onclick="supprimerCommandeAdmin('${cmd.id}')" class="btn-terminer" style="background:#e74c3c;">Effacer</button>
+                        <button onclick="supprimerCommandeAdmin('${cmd.id}')" class="btn-terminer" style="background:#e74c3c; margin-top:5px;">Effacer</button>
                     </div>
                 </div>`;
-            });
-            ordersContainer.innerHTML = html;
+            }).join('');
         }
     </script>
 </body>
