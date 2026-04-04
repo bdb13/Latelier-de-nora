@@ -25,7 +25,7 @@
   <main style="padding: 20px;">
     <section class="formulaire-commande" style="max-width: 600px; margin: 50px auto;">
       <h2>Où en sont mes douceurs ? 🔍</h2>
-      <p style="margin-bottom: 30px; text-align: center;">Entrez votre numéro de commande (ex: NORA-12345) ou votre numéro de téléphone pour vérifier le statut de votre réservation.</p>
+      <p style="margin-bottom: 30px; text-align: center;">Entrez votre numéro de commande (ex: NORA-12345) ou votre téléphone.</p>
       
       <form id="form-suivi">
         <div class="groupe-champ">
@@ -41,44 +41,33 @@
   <script src="script.js"></script>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const formSuivi = document.getElementById('form-suivi');
-        const conteneurResultat = document.getElementById('resultat-suivi');
+    document.getElementById('form-suivi').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const recherche = document.getElementById('numero-suivi').value.trim().toUpperCase();
+        const conteneur = document.getElementById('resultat-suivi');
 
-        if (formSuivi) {
-            formSuivi.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const recherche = document.getElementById('numero-suivi').value.trim().toUpperCase();
-                
-                // Recherche par ID de commande OU par téléphone (en enlevant les espaces)
-                const commandesTrouvees = commandes.filter(c => 
-                    (c.id && c.id.toUpperCase() === recherche) || 
-                    (c.tel && c.tel.replace(/\s/g, '') === recherche.replace(/\s/g, ''))
-                );
+        // On cherche dans l'array 'commandes' qui vient d'être rempli par MongoDB via script.js
+        const trouvees = commandes.filter(c => 
+            (c.id && c.id.toUpperCase() === recherche) || 
+            (c.tel && c.tel.replace(/\s/g, '') === recherche.replace(/\s/g, ''))
+        );
 
-                if (commandesTrouvees.length === 0) {
-                    conteneurResultat.innerHTML = `<div style="margin-top: 30px; text-align: center; color: #e74c3c; font-weight: bold; background: #fdfcf8; padding: 15px; border-radius: 8px; border: 1px solid #e74c3c;">
-                        ❌ Aucune commande trouvée avec cet identifiant.
-                    </div>`;
-                } else {
-                    let html = '<div style="margin-top: 30px;">';
-                    commandesTrouvees.forEach(cmd => {
-                        let badgeClass = cmd.statut === 'recu' ? 'statut-rouge' : (cmd.statut === 'preparation' ? 'statut-orange' : 'statut-vert');
-                        let statutTexte = cmd.statut === 'recu' ? 'Reçue (En attente)' : (cmd.statut === 'preparation' ? 'En préparation' : 'Prête / Livrée');
-                        
-                        html += `
-                        <div style="background: white; border: 2px solid var(--gold-accent); padding: 25px; border-radius: 12px; margin-bottom: 20px; text-align: left; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
-                            <h3 style="margin-top: 0; color: var(--gold-accent); border-bottom: 1px solid #eee; padding-bottom: 10px;">Commande ${cmd.id}</h3>
-                            <p style="font-size: 1.1rem; margin-bottom: 15px; color: var(--pine-green); font-weight: bold;">Statut : <span class="order-badge ${badgeClass}" style="font-size: 1rem;">${statutTexte}</span></p>
-                            <p>📅 <b>Prévue pour le :</b> ${new Date(cmd.date).toLocaleDateString('fr-FR')}</p>
-                            <p>📦 <b>Mode :</b> ${cmd.methode === 'livraison' ? '🚚 Livraison' : '🛍️ Retrait Stand'}</p>
-                            <p style="margin-bottom: 0;">🛒 <b>Total :</b> ${cmd.total.toFixed(2)} €</p>
-                        </div>`;
-                    });
-                    html += '</div>';
-                    conteneurResultat.innerHTML = html;
-                }
+        if (trouvees.length === 0) {
+            conteneur.innerHTML = `<p style="color:red; text-align:center; margin-top:20px;">❌ Aucune commande trouvée. Vérifiez l'identifiant.</p>`;
+        } else {
+            let html = '<div style="margin-top: 30px;">';
+            trouvees.forEach(cmd => {
+                let badge = cmd.statut === 'recu' ? 'statut-rouge' : (cmd.statut === 'preparation' ? 'statut-orange' : 'statut-vert');
+                let texte = cmd.statut === 'recu' ? 'Reçue' : (cmd.statut === 'preparation' ? 'En préparation' : 'Prête !');
+                html += `
+                <div style="background: white; border: 2px solid var(--gold-accent); padding: 20px; border-radius: 12px; margin-bottom: 15px;">
+                    <h3 style="color: var(--gold-accent);">Commande ${cmd.id}</h3>
+                    <p><b>Statut :</b> <span class="order-badge ${badge}">${texte}</span></p>
+                    <p>📅 <b>Pour le :</b> ${new Date(cmd.date).toLocaleDateString('fr-FR')}</p>
+                    <p>🛒 <b>Articles :</b> ${cmd.articles.map(a => `${a.quantite}x ${a.nom}`).join(', ')}</p>
+                </div>`;
             });
+            conteneur.innerHTML = html + '</div>';
         }
     });
   </script>
