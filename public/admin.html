@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L'atelier de NORA - Espace Administrateur</title>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        /* --- DESIGN DU CALENDRIER MOIS PAR MOIS --- */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 15px; }
+        .calendar-day { background: white; border: 2px solid #eaeaea; padding: 10px; border-radius: 8px; text-align: center; min-height: 80px; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .calendar-day.has-order { border-color: var(--gold-accent); background-color: #fdfcf8; }
+        .calendar-day.empty { background-color: transparent; border: none; box-shadow: none; }
+        .date-jour { font-size: 0.95rem; text-transform: capitalize; margin-bottom: 8px; }
+        
+        .pastille-cmd { background-color: var(--pine-green); color: white; padding: 5px 8px; border-radius: 5px; font-size: 0.85rem; display: block; margin-bottom: 5px; cursor: pointer; transition: 0.2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pastille-cmd:hover { transform: scale(1.05); background-color: var(--gold-accent); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        
+        .btn-nav-cal { background: var(--gold-accent); color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-nav-cal:hover { background: #a88544; transform: scale(1.05); }
+
+        /* Animation quand on clique sur le calendrier et qu'on atterrit sur la commande */
+        .highlight-focus { animation: flashHighlight 2s ease-out; }
+        @keyframes flashHighlight { 0% { box-shadow: 0 0 20px var(--gold-accent); border-color: var(--gold-accent); } 100% { box-shadow: none; border-color: #eee; } }
+
+        @media (max-width: 768px) {
+            .calendar-grid { display: flex; flex-wrap: nowrap; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 10px; }
+            .calendar-day { flex: 0 0 120px; scroll-snap-align: center; }
+            .calendar-day.empty { display: none; /* On cache les jours vides sur mobile pour gagner de la place */ }
+        }
+    </style>
+</head>
+<body class="admin-bg">
+
+    <header class="header-fin">
+        <a href="index.html" class="logo-titre">
+            <span class="script">L'atelier De</span> <span class="serif">NORA</span>
+            <span style="color: #e74c3c; font-size: 1rem; margin-left: 15px; font-family: sans-serif; font-weight:bold;">(ESPACE ADMIN)</span>
+        </a>
+        <nav style="display: flex; align-items: center;">
+            <a href="index.html">Retour au site</a>
+            <a href="#" onclick="seDeconnecter()" style="color: #e74c3c;">🚪 Déconnexion</a>
+        </nav>
+    </header>
+
+    <main class="admin-dashboard">
+        <div class="admin-stats" id="admin-stats"></div>
+
+        <div class="admin-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px;">
+                <h2 style="border: none; padding: 0; margin: 0;">📅 Calendrier des Commandes</h2>
+                <div style="text-align: right;">
+                    <button class="btn-nav-cal" onclick="changerMois(-1)">◀ Mois Préc.</button>
+                    <span id="titre-mois" style="font-weight: bold; font-size: 1.2rem; color: var(--pine-green); margin: 0 15px; display: inline-block; min-width: 130px; text-align: center; text-transform: capitalize;"></span>
+                    <button class="btn-nav-cal" onclick="changerMois(1)">Mois Suiv. ▶</button>
+                </div>
+            </div>
+            
+            <div id="admin-calendar" class="calendar-grid"></div>
+        </div>
+
+        <div class="admin-section">
+            <h2>📦 Gestion des Commandes</h2>
+            <div id="admin-orders"></div>
+        </div>
+    </main>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
+    <script src="script.js"></script>
+    
+    <script>
+        let dateAffichage = new Date(); // Permet de savoir quel mois on regarde
+        let commandesValides = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Nettoyage des vieilles commandes fantômes
+            commandesValides = commandes.filter(c => c && c.id);
+            
+            genererStats();
+            genererCalendrier();
+            genererListeCommandes();
+        });
+
+        // --- 1. STATISTIQUES ---
+        function genererStats() {
+            let caTotal = 0;
+            let aPreparer = 0;
+            commandesValides.forEach(c => {
+                caTotal += (c.total || 0);
+                if(c.statut !== 'prete') aPreparer++;
+            });
+            
+            document.getElementById('admin-stats').innerHTML = `
+                <div class="stat-card"><h3>Total Commandes</h3><div class="value">${commandesValides.length}</div></div>
+                <div class="stat-card"><h3>À Préparer</h3><div class="value" style="color: var(--status-orange)">${aPreparer}</div></div>
+                <div class="stat-card"><h3>Chiffre d'Affaires</h3><div class="value" style="color: var(--status-vert)">${caTotal.toFixed(2)}€</div></div>
+            `;
+        }
+
+        // --- 2. LE CALENDRIER MOIS PAR MOIS ---
+        function changerMois(direction) {
+            dateAffichage.setMonth(dateAffichage.getMonth() + direction);
+            genererCalendrier();
+        }
+
+        function scrollToCommande(idCmd) {
+            const carte = document.getElementById('cmd-' + idCmd);
+            if(carte) {
+                // Fait glisser la page jusqu'à la commande
+                carte.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Ajoute le petit flash lumineux doré
+                carte.classList.remove('highlight-focus');
+                void carte.offsetWidth; // Astuce pour relancer l'animation
+                carte.classList.add('highlight-focus');
+            }
+        }
+
+        function genererCalendrier() {
+            const calContainer = document.getElementById('admin-calendar');
+            let annee = dateAffichage.getFullYear();
+            let mois = dateAffichage.getMonth();
+
+            // Titre du mois (ex: "Février 2026")
+            document.getElementById('titre-mois').innerText = dateAffichage.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+
+            let premierJourMois = new Date(annee, mois, 1);
+            let dernierJourMois = new Date(annee, mois + 1, 0);
+            let nbJours = dernierJourMois.getDate();
+
+            // Calcule le décalage pour que le 1er du mois tombe dans la bonne colonne (Lundi à Dimanche)
+            let jourSemaine = premierJourMois.getDay() === 0 ? 6 : premierJourMois.getDay() - 1;
+
+            let calHTML = '';
+
+            // Cases vides pour le début du mois
+            for(let i = 0; i < jourSemaine; i++) {
+                calHTML += `<div class="calendar-day empty"></div>`;
+            }
+
+            // Affichage de tous les jours du mois
+            for(let jour = 1; jour <= nbJours; jour++) {
+                let dateComplete = new Date(annee, mois, jour);
+                let dateStr = `${annee}-${String(mois + 1).padStart(2, '0')}-${String(jour).padStart(2, '0')}`;
+                
+                let cmdsDuJour = commandesValides.filter(c => c.date === dateStr);
+                let aDesCommandes = cmdsDuJour.length > 0;
+                
+                let classDesign = aDesCommandes ? 'has-order' : '';
+                let nomJour = dateComplete.toLocaleDateString('fr-FR', {weekday: 'short', day: 'numeric'});
+                
+                let pastillesHTML = '';
+                if(aDesCommandes) {
+                    cmdsDuJour.forEach(cmd => {
+                        let prenom = cmd.nom ? cmd.nom.split(' ')[0] : 'Client';
+                        // La pastille devient cliquable !
+                        pastillesHTML += `<div class="pastille-cmd" onclick="scrollToCommande('${cmd.id}')" title="Voir la commande de ${prenom}">📦 ${prenom}</div>`;
+                    });
+                } else {
+                    pastillesHTML = '<span style="color:#ccc; font-size:0.8rem;">Rien prévu</span>';
+                }
+
+                calHTML += `
+                    <div class="calendar-day ${classDesign}">
+                        <div class="date-jour" style="color: ${aDesCommandes ? 'var(--pine-green)' : '#888'}; font-weight: ${aDesCommandes ? 'bold' : 'normal'};">
+                            ${nomJour}
+                        </div>
+                        <div>${pastillesHTML}</div>
+                    </div>
+                `;
+            }
+            calContainer.innerHTML = calHTML;
+        }
+
+        // --- 3. FONCTION DE SUPPRESSION ---
+        function supprimerCommande(indexReel) {
+            if(confirm("⚠️ Êtes-vous sûr de vouloir supprimer cette commande ? Cette action est irréversible et la supprimera de l'historique.")) {
+                commandes.splice(indexReel, 1);
+                localStorage.setItem('commandesNora', JSON.stringify(commandes));
+                alert("🗑️ Commande supprimée avec succès.");
+                location.reload(); // Recharge la page pour mettre à jour
+            }
+        }
+
+        // --- 4. LA LISTE DES COMMANDES ---
+        function genererListeCommandes() {
+            const ordersContainer = document.getElementById('admin-orders');
+            if(commandesValides.length === 0) {
+                ordersContainer.innerHTML = "<p style='text-align:center; color:#888; font-style:italic; font-size:1.2rem; padding:40px;'>Le carnet de commandes est vide pour le moment.</p>";
+            } else {
+                let commandesTriees = [...commandesValides].sort((a,b) => new Date(a.date || 0) - new Date(b.date || 0));
+                let ordHTML = '';
+                
+                commandesTriees.forEach((cmd) => {
+                    // On retrouve l'ID exact pour les fonctions de statut et de suppression
+                    let indexReel = commandes.findIndex(c => c.id === cmd.id);
+                    let badgeClass = cmd.statut === 'recu' ? 'statut-rouge' : (cmd.statut === 'preparation' ? 'statut-orange' : 'statut-vert');
+                    
+                    let notesHtml = (cmd.notes && cmd.notes !== "Aucune précision") 
+                        ? `<div style="background: #fff3cd; padding: 12px; border-left: 4px solid #ffc107; margin: 15px 0; font-style: italic; border-radius: 4px; color: #856404;">
+                             💬 <b>Petit mot du client :</b> "${cmd.notes}"
+                           </div>` : '';
+
+                    let listeArticles = (cmd.articles && Array.isArray(cmd.articles))
+                        ? cmd.articles.map(a => `${a.quantite}x ${a.nom}`).join(' <br> ')
+                        : "<i>Détail non disponible</i>";
+
+                    // On ajoute l'ID 'cmd-XXXX' pour que le calendrier puisse descendre jusqu'ici
+                    ordHTML += `
+                    <div class="order-card" id="cmd-${cmd.id}">
+                        <div class="order-info" style="flex: 1;">
+                            <h4>Commande ${cmd.id} <span class="order-badge ${badgeClass}" style="margin-left: 10px;">${(cmd.statut || 'recu').toUpperCase()}</span></h4>
+                            <p>👤 <b>Client :</b> ${cmd.nom || 'Inconnu'} (${cmd.tel || ''} | <a href="mailto:${cmd.emailClient || ''}" style="color:var(--gold-accent);">${cmd.emailClient || ''}</a>)</p>
+                            <p>📅 <b>Pour le :</b> <span style="color:var(--pine-green); font-weight:bold; font-size:1.1rem;">${cmd.date ? new Date(cmd.date).toLocaleDateString('fr-FR') : "Date inconnue"}</span></p>
+                            <p>📦 <b>Mode :</b> ${cmd.methode === 'livraison' ? '🚚 Livraison' : '🛍️ Retrait Stand'}</p>
+                            ${cmd.methode === 'livraison' ? `<p>📍 <b>Adresse :</b> ${cmd.adresse}</p>` : ''}
+                            
+                            <div style="background: white; padding: 12px; border: 1px solid #eee; border-radius: 8px; margin-top: 10px;">
+                                <b>Articles à préparer :</b><br>
+                                <span style="color: var(--pine-green); font-weight: 500; display:inline-block; margin-top:5px;">${listeArticles}</span>
+                            </div>
+                            
+                            ${notesHtml}
+                            
+                            <p style="color: var(--gold-accent); font-weight: bold; font-size: 1.3rem; margin-top: 15px;">Total : ${(cmd.total || 0).toFixed(2)} €</p>
+                        </div>
+                        
+                        <div style="width: 220px; text-align:right; margin-left: 20px;">
+                            <label style="display:block; font-size:0.95rem; margin-bottom:8px; color:var(--pine-green); font-weight:bold;">Statut (envoie un email) :</label>
+                            <select class="select-statut" onchange="changerStatut(${indexReel}, this.value)" style="border: 2px solid var(--gold-accent); padding: 10px; border-radius: 8px; cursor:pointer; font-family: inherit; font-size: 0.95rem; width:100%;">
+                                <option value="recu" ${cmd.statut === 'recu' ? 'selected' : ''}>🔴 Reçue (À faire)</option>
+                                <option value="preparation" ${cmd.statut === 'preparation' ? 'selected' : ''}>🟠 En préparation</option>
+                                <option value="prete" ${cmd.statut === 'prete' ? 'selected' : ''}>🟢 Prête / Livrée</option>
+                            </select>
+                            
+                            <hr style="border:0; border-top: 1px solid #ddd; margin: 20px 0 15px 0;">
+                            
+                            <button onclick="supprimerCommande(${indexReel})" style="background: #e74c3c; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; width: 100%;">
+                                🗑️ Supprimer
+                            </button>
+                        </div>
+                    </div>`;
+                });
+                ordersContainer.innerHTML = ordHTML;
+            }
+        }
+    </script>
+</body>
+</html>

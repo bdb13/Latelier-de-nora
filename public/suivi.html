@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Suivre ma commande - L'atelier De NORA</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="catalogue-bg">
+  
+<header class="header-fin">
+    <a href="index.html" class="logo-titre">
+      <span class="script">L'atelier De</span> <span class="serif">NORA</span>
+    </a>
+    <nav style="display: flex; align-items: center;">
+      <a href="index.html">Accueil</a>
+      <a href="catalogue.html">Nos Douceurs</a>
+      <a href="panier.html">Mon Panier</a>
+      <span id="menu-auth-dynamique"></span>
+    </nav>
+  </header>
+
+  <main>
+    <section class="formulaire-commande" style="max-width: 600px; margin-top: 100px;">
+      <h2>Où en sont mes douceurs ? 🔍</h2>
+      <p style="margin-bottom: 30px; text-align: center;">Entrez votre numéro de commande (ex: NORA-12345) ou votre numéro de téléphone pour vérifier le statut de votre réservation.</p>
+      
+      <form id="form-suivi">
+        <div class="groupe-champ">
+          <input type="text" id="numero-suivi" placeholder="NORA-12345 ou 0612345678" required style="text-align: center; font-size: 1.2rem;">
+        </div>
+        <button type="submit" class="bouton" style="width: 100%;">Vérifier le statut</button>
+      </form>
+
+      <div id="resultat-suivi"></div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

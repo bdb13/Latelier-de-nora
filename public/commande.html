@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L'atelier de NORA - Valider ma commande</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="header-fin">
+        <a href="index.html" class="logo-titre">
+            <span class="script">L'atelier De</span> <span class="serif">NORA</span>
+        </a>
+        <nav style="display: flex; align-items: center;">
+            <a href="index.html">Accueil</a>
+            <a href="catalogue.html">Nos Douceurs</a>
+            <a href="panier.html">Mon Panier</a>
+            <span id="menu-auth-dynamique"></span> 
+        </nav>
+    </header>
+
+    <main style="padding: 20px;">
+        <div class="formulaire-commande">
+            <h2>Finaliser ma commande</h2>
+            
+            <form id="form-commande">
+                
+                <div class="groupe-champ">
+                    <label for="nom">Nom complet</label>
+                    <input type="text" id="nom" placeholder="Ex: Jean Dupont" required>
+                </div>
+                
+                <div class="groupe-champ">
+                    <label for="telephone">Numéro de téléphone</label>
+                    <input type="tel" id="telephone" placeholder="Ex: 06 12 34 56 78" required>
+                </div>
+
+                <div class="groupe-champ">
+                    <label>Date de récupération (Préparation de 5 jours minimum) :</label>
+                    <input type="date" id="date-retrait" required>
+                </div>
+
+                <div class="groupe-champ">
+                    <label>Mode de récupération :</label>
+                    <div class="radio-groupe">
+                        <label>
+                            <input type="radio" name="recuperation" id="choix-marche" value="retrait" checked>
+                            🛍️ Retrait au stand (Marché de Gardanne)
+                        </label>
+                        <label>
+                            <input type="radio" name="recuperation" id="choix-livraison" value="livraison">
+                            🚚 Livraison à domicile (Max 15km - Sous réserve de 50€ d'achat)
+                        </label>
+                    </div>
+                </div>
+
+                <div id="bloc-livraison" style="display:none; background: #fdfcf8; padding: 25px; border-radius: 12px; margin-top: 15px; border: 2px solid var(--gold-accent);">
+                    
+                    <div class="groupe-champ">
+                        <label>Adresse complète (Recherche auto)</label>
+                        <input type="text" id="adresse" placeholder="📍 Tapez votre adresse et patientez 1 seconde...">
+                        <p id="erreur-distance" style="font-weight:bold; display:none; margin-top:10px;"></p>
+                    </div>
+
+                    <div id="map" class="map-container" style="display:none; height: 350px; border-radius: 8px; border: 2px solid #c5a059; margin-bottom: 15px;"></div>
+                </div>
+
+                <div class="groupe-champ">
+                    <label for="notes-commande">Un petit mot pour Nora ? (Facultatif)</label>
+                    <textarea id="notes-commande" rows="3" placeholder="Une allergie, une demande spéciale pour l'emballage, ou une précision pour le livreur... Dites-nous tout !"></textarea>
+                </div>
+
+                <div class="info-paiement">
+                    <h3 style="margin:0 0 10px 0;">Total à régler : <span id="total-commande">0.00</span> €</h3>
+                    <p style="margin:0; font-size:0.9rem; opacity:0.9;">Le paiement s'effectuera à la remise de la commande.</p>
+                </div>
+
+                <button type="submit" class="bouton" style="width: 100%; margin-top: 25px; font-size: 1.2rem; padding: 15px;">✨ Confirmer ma commande</button>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 L'atelier de NORA - Artisanat de Gardanne</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
