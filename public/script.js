@@ -7,9 +7,9 @@ const TEMPLATE_CHANGEMENT_STATUT = "template_91s0ptq";
 if (typeof emailjs !== 'undefined') { emailjs.init(EMAILJS_PUBLIC_KEY); }
 
 let panier = JSON.parse(localStorage.getItem('panierNora')) || [];
-let commandes = JSON.parse(localStorage.getItem('commandesNora')) || [];
 let utilisateurs = JSON.parse(localStorage.getItem('utilisateursNora')) || [];
 let utilisateurConnecte = JSON.parse(localStorage.getItem('utilisateurActuelNora')) || null;
+let commandes = []; // Sera rempli par la base de données (MongoDB)
 
 // --- GESTION ACCÈS & AUTH ---
 function verifierAccesPages() {
@@ -96,7 +96,7 @@ function envoyerMailCommande(commande) {
         order_id: commande.id, total: commande.total.toFixed(2),
         date: new Date(commande.date).toLocaleDateString('fr-FR'),
         articles: commande.articles.map(a => `${a.quantite}x ${a.nom}`).join(', '),
-        notes: commande.notes // Ajout des notes pour l'email
+        notes: commande.notes
     };
     emailjs.send(EMAILJS_SERVICE_ID, TEMPLATE_NOUVELLE_COMMANDE, templateParams);
     templateParams.to_email = "latelierdenora.stg@gmail.com"; templateParams.to_name = "Nora";
@@ -232,7 +232,7 @@ async function rechercherAdresse(query) {
     } catch (error) { console.error("Erreur:", error); }
 }
 
-// --- SOUMISSION DE LA COMMANDE ---
+// --- SOUMISSION DE LA COMMANDE (VERS MONGODB) ---
 const formCmd = document.getElementById('form-commande');
 if (formCmd) {
     formCmd.addEventListener('submit', (e) => {
@@ -268,39 +268,83 @@ if (formCmd) {
             date: dateChoisie, notes: notesSaisies, articles: [...panier], statut: 'recu' 
         };
         
-        commandes.push(nouvelleCommande);
-        localStorage.setItem('commandesNora', JSON.stringify(commandes));
-        localStorage.removeItem('panierNora');
-        envoyerMailCommande(nouvelleCommande);
-        
-        alert(`✅ Commande confirmée ! Numéro : ${numCommande}. Un mail a été envoyé.`);
-        window.location.href = "suivi.html";
+        // 🚀 ENVOI AU SERVEUR (MONGODB)
+        fetch('/api/commandes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(nouvelleCommande)
+        })
+        .then(response => {
+            if (response.ok) {
+                localStorage.removeItem('panierNora');
+                envoyerMailCommande(nouvelleCommande);
+                alert(`✅ Commande confirmée ! Numéro : ${numCommande}. Un mail a été envoyé.`);
+                window.location.href = "suivi.html";
+            } else {
+                alert("❌ Erreur lors de l'enregistrement. Veuillez réessayer.");
+            }
+        }).catch(err => {
+            console.error(err);
+            alert("❌ Erreur de connexion au serveur.");
+        });
     });
 }
 
-function changerStatut(index, nouveauStatut) {
-    commandes[index].statut = nouveauStatut;
-    localStorage.setItem('commandesNora', JSON.stringify(commandes));
-    if (nouveauStatut !== 'recu') { envoyerMailStatut(commandes[index]); alert("📧 Client informé !"); }
-    location.reload();
+// --- MODIFIER STATUT (API MongoDB) ---
+function changerStatut(indexOuId, nouveauStatut) {
+    // Si la fonction est appelée avec un index (ancien système), on récupère la commande
+    let cmd = typeof indexOuId === "number" ? commandes[indexOuId] : commandes.find(c => c.id === indexOuId);
+    if (!cmd) return;
+
+    fetch(`/api/commandes/${cmd.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ statut: nouveauStatut })
+    })
+    .then(response => {
+        if (response.ok) {
+            cmd.statut = nouveauStatut;
+            if (nouveauStatut !== 'recu') { envoyerMailStatut(cmd); alert("📧 Client informé !"); }
+            location.reload();
+        }
+    })
+    .catch(err => console.error("Erreur mise à jour statut", err));
+}
+
+// --- CHARGER COMMANDES (MongoDB) ---
+async function chargerCommandesServeur() {
+    try {
+        const res = await fetch('/api/commandes');
+        if (res.ok) {
+            commandes = await res.json();
+        }
+    } catch (err) {
+        console.error("Impossible de charger les commandes", err);
+    }
 }
 
 // ==========================================
-// LANCEMENT GLOBAL (SÉCURITÉS RENFORCÉES)
+// LANCEMENT GLOBAL (Restauration des options de Nora)
 // ==========================================
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    
+    // On charge les commandes depuis la base en ligne avant tout
+    await chargerCommandesServeur();
+
+    // 1. RESTAURATION DES PRIX ET DU PANIER
     mettreAJourCompteur();
     if (document.getElementById('contenu-panier')) afficherPanier();
 
-    // Remplissage infos client
     if (utilisateurConnecte && document.getElementById('form-commande')) {
         if(document.getElementById('nom')) document.getElementById('nom').value = utilisateurConnecte.nom;
         if(document.getElementById('telephone')) document.getElementById('telephone').value = utilisateurConnecte.tel;
+        
+        // C'est cette ligne qui remet le prix à jour directement
         const totalAffiche = document.getElementById('total-commande');
         if(totalAffiche) totalAffiche.innerText = calculerTotal().toFixed(2);
     }
 
-    // --- LE CALENDRIER BLOQUÉ À +5 JOURS (SÉCURITÉ VISUELLE ET JS) ---
+    // 2. RESTAURATION DU CALENDRIER (+5 JOURS MINIMUM ET VIGILE)
     const dateInput = document.getElementById('date-retrait');
     let minDateStr = "";
     
@@ -312,20 +356,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const jour = String(minDate.getDate()).padStart(2, '0');
         minDateStr = `${annee}-${mois}-${jour}`;
         
-        // Bloque le calendrier visuellement
         dateInput.setAttribute('min', minDateStr);
         dateInput.value = minDateStr; 
 
-        // Vigile : Si le client bidouille la date à la main
         dateInput.addEventListener('change', (e) => {
             if (e.target.value < minDateStr) {
-                alert("⚠️ Nora a besoin d'au minimum 5 jours pour préparer vos douceurs !");
-                e.target.value = minDateStr; // On remet la date légale de force
+                alert("⚠️ L'Atelier a besoin d'au minimum 5 jours pour préparer vos douceurs !");
+                e.target.value = minDateStr; 
             }
         });
     }
 
-    // --- GESTION LIVRAISON & CARTE (CORRECTIF BUG D'AFFICHAGE) ---
+    // 3. RESTAURATION DE LA CARTE LEAFLET ET DU BLOCAGE À 50€
     const inputAdresse = document.getElementById('adresse');
     const radioLivraison = document.getElementById('choix-livraison');
     const radioRetrait = document.getElementById('choix-marche');
@@ -342,7 +384,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (radioLivraison && radioRetrait && blocLivraison) {
-        // Blocage si commande < 50€
         if (totalCommande < 50) {
             radioLivraison.disabled = true;
             radioRetrait.checked = true;
@@ -358,13 +399,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Affichage de la carte et correctif "Carte Grise" de Leaflet
         radioLivraison.addEventListener('change', () => { 
             blocLivraison.style.display = 'block'; 
             if(mapDiv) { 
                 mapDiv.style.display = 'block'; 
                 initFreeMap(); 
-                // On laisse le temps au bloc de s'ouvrir, puis on force la carte à recalculer sa taille
+                // La ligne magique qui empêche la carte d'être grise :
                 setTimeout(() => { if(map) map.invalidateSize(); }, 200); 
             }
         });
@@ -373,5 +413,10 @@ document.addEventListener('DOMContentLoaded', () => {
             blocLivraison.style.display = 'none'; 
             if(mapDiv) mapDiv.style.display = 'none';
         });
+    }
+    
+    // Relancer l'affichage Admin ou Suivi si leurs fonctions respectives existent
+    if (typeof chargerToutesLesCommandes === 'function') {
+        chargerToutesLesCommandes();
     }
 });
