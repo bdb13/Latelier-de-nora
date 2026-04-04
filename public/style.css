@@ -157,37 +157,30 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { background-color: 
 .separateur::before { left: 0; } 
 .separateur::after { right: 0; }
 
-
 /* =========================================
    ADAPTATION MOBILE (TÉLÉPHONE UNIQUEMENT)
    ========================================= */
-
-/* Le bouton 3 traits (Caché sur PC) */
 .hamburger { display: none; background: none; border: none; font-size: 2.5rem; color: var(--gold-accent); cursor: pointer; padding: 0; margin: 0; }
 
 @media (max-width: 768px) {
-    /* 1. HEADER : Logo à gauche, ☰ à droite */
+    /* 1. HEADER : En-tête collant en haut (Sticky) */
     .header-fin {
+        position: sticky;
+        top: 0;
+        z-index: 9999; /* Par-dessus tout le reste */
         flex-direction: row; 
         justify-content: space-between;
         align-items: center;
         padding: 15px 20px;
-        position: relative; 
     }
 
-    /* 2. LOGO : Bien aligné sur une ligne */
-    .logo-titre {
-        flex-direction: row;
-        align-items: baseline;
-        gap: 8px;
-    }
+    .logo-titre { flex-direction: row; align-items: baseline; gap: 8px; }
     .logo-titre .script { font-size: 1.8rem; margin: 0; }
     .logo-titre .serif { font-size: 1.2rem; margin: 0; }
 
-    /* Apparition du bouton ☰ */
     .hamburger { display: block; }
 
-    /* 3. MENU DÉROULANT (Caché par défaut) */
+    /* 2. MENU DÉROULANT GLOBAL */
     .header-fin nav {
         display: none !important; 
         flex-direction: column;
@@ -206,12 +199,8 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { background-color: 
         animation: glissement 0.3s ease;
     }
 
-    @keyframes glissement {
-        from { opacity: 0; transform: translateY(-10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes glissement { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Liens du menu déroulant */
     .header-fin nav a {
         padding: 15px;
         margin: 0;
@@ -221,75 +210,44 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { background-color: 
         box-sizing: border-box;
     }
 
-    /* 4. SOUS-MENU PROFIL PROPRE SUR MOBILE */
+    /* 3. SOUS-MENU PROFIL (Caché par défaut sur mobile, affiché au clic via JS) */
     .menu-profil { width: 100%; margin: 0; text-align: center; }
     
-    .bouton-profil {
-        width: 100%;
-        border: none;
-        border-radius: 0;
-        padding: 15px;
-        background: transparent;
-        font-size: 1.1rem;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
+    .bouton-profil { width: 100%; border: none; border-radius: 0; padding: 15px; background: transparent; font-size: 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
 
-    /* Toujours afficher les options du profil sur mobile au lieu de faire un "hover" */
     .dropdown-content {
         position: static; 
-        display: flex !important; 
+        display: none !important; /* Caché par défaut */
         flex-direction: column;
-        background-color: rgba(0,0,0,0.1); /* Légèrement plus sombre pour différencier */
+        background-color: rgba(0,0,0,0.15);
         box-shadow: none;
         border: none;
         width: 100%;
     }
 
-    .dropdown-content a {
-        padding: 12px;
-        font-size: 0.95rem;
-        color: #e0e0e0;
-    }
+    /* La classe ajoutée par le clic en Javascript */
+    .dropdown-content.show-sous-menu { display: flex !important; }
 
-    /* 5. PAGE ACCUEIL : Textes et boutons plus gros */
+    .dropdown-content a { padding: 12px; font-size: 0.95rem; color: #e0e0e0; }
+
+    /* 4. ADAPTATIONS RESTANTES (Tailles, Blocs) */
     .accueil-hero { height: auto; min-height: 75vh; padding: 40px 20px; }
     .sous-titre-hero { font-size: 1.6rem; line-height: 1.4; margin-bottom: 25px; }
     .accueil-hero .bouton { font-size: 1.2rem; padding: 15px 30px; width: 90%; max-width: 300px; }
 
-    /* 6. CORRECTION DES BLOCS (Panier, Formulaires, Douceurs) */
     main { padding: 15px !important; }
     .carte { width: 100%; max-width: 350px; }
     
     .panier-container, .formulaire-commande, .connexion-container, .details {
-        margin: 15px auto !important;
-        padding: 20px !important;
-        width: 100% !important;
-        box-sizing: border-box;
-        border-top: 3px solid var(--gold-accent);
+        margin: 15px auto !important; padding: 20px !important; width: 100% !important; box-sizing: border-box; border-top: 3px solid var(--gold-accent);
     }
-
     .details h2 { font-size: 1.8rem; }
     .prix-gros { font-size: 1.5rem; }
-    
     .admin-stats { flex-direction: column; gap: 15px; }
-}
-/* CORRECTION DES BOUTONS D'AJOUT AU PANIER (MOBILE UNIQUEMENT) */
-@media (max-width: 768px) {
-    .action-produit {
-        flex-direction: column;
-        width: 100%;
-        gap: 15px;
-    }
-    .selecteur-qte {
-        width: 100%;
-        justify-content: center;
-    }
-    .btn-qte {
-        padding: 12px 25px; /* On grossit la zone pour le doigt */
-    }
-    .action-produit .bouton {
-        width: 100%;
-        text-align: center;
-        box-sizing: border-box;
-    }
+
+    /* CORRECTION BOUTONS AJOUT PANIER */
+    .action-produit { flex-direction: column; width: 100%; gap: 15px; }
+    .selecteur-qte { width: 100%; justify-content: center; }
+    .btn-qte { padding: 12px 25px; }
+    .action-produit .bouton { width: 100%; text-align: center; box-sizing: border-box; }
 }
