@@ -7,9 +7,9 @@ const TEMPLATE_CHANGEMENT_STATUT = "template_91s0ptq";
 if (typeof emailjs !== 'undefined') { emailjs.init(EMAILJS_PUBLIC_KEY); }
 
 let panier = JSON.parse(localStorage.getItem('panierNora')) || [];
-let utilisateurs = JSON.parse(localStorage.getItem('utilisateursNora')) || [];
 let utilisateurConnecte = JSON.parse(localStorage.getItem('utilisateurActuelNora')) || null;
-let commandes = []; // Sera rempli par la base de données (MongoDB)
+let commandes = []; // Depuis MongoDB
+let utilisateurs = []; // Depuis MongoDB
 
 // --- GESTION ACCÈS & AUTH ---
 function verifierAccesPages() {
@@ -48,21 +48,19 @@ function seDeconnecter() {
     window.location.href = "index.html"; 
 }
 
-// NOUVEAU : SUPPRESSION DE COMPTE
+// SUPPRESSION DE COMPTE (MongoDB)
 function supprimerMonCompte() {
     if (confirm("⚠️ Êtes-vous sûr de vouloir supprimer votre compte définitivement ? Cette action est irréversible.")) {
-        // On retire l'utilisateur de la liste
-        utilisateurs = utilisateurs.filter(u => u.email !== utilisateurConnecte.email);
-        localStorage.setItem('utilisateursNora', JSON.stringify(utilisateurs));
-        
-        // On le déconnecte
-        localStorage.removeItem('utilisateurActuelNora');
-        alert("Votre compte a bien été supprimé. À bientôt !");
-        window.location.href = "index.html";
+        fetch(`/api/utilisateurs/${utilisateurConnecte.email}`, { method: 'DELETE' })
+        .then(() => {
+            localStorage.removeItem('utilisateurActuelNora');
+            alert("Votre compte a bien été supprimé. À bientôt !");
+            window.location.href = "index.html";
+        });
     }
 }
 
-// NOUVEAU : MOT DE PASSE OUBLIÉ
+// MOT DE PASSE OUBLIÉ (MongoDB)
 function motDePasseOublie() {
     let emailSaisi = prompt("🔒 Réinitialisation : \nVeuillez entrer l'adresse email de votre compte :");
     if (!emailSaisi) return;
@@ -79,14 +77,18 @@ function motDePasseOublie() {
         return;
     }
 
-    // Vérification de sécurité par téléphone
     let telSaisi = prompt("📱 Par mesure de sécurité, veuillez confirmer le numéro de téléphone lié à votre compte :");
     if (telSaisi && telSaisi.replace(/\s/g, '') === utilisateurs[indexUtilisateur].tel.replace(/\s/g, '')) {
         let nouveauMdp = prompt("✅ Identité vérifiée ! \nEntrez votre nouveau mot de passe :");
         if (nouveauMdp && nouveauMdp.length >= 4) {
-            utilisateurs[indexUtilisateur].mdp = nouveauMdp;
-            localStorage.setItem('utilisateursNora', JSON.stringify(utilisateurs));
-            alert("✨ Votre mot de passe a été modifié avec succès ! Vous pouvez maintenant vous connecter.");
+            fetch(`/api/utilisateurs/${emailSaisi}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mdp: nouveauMdp })
+            }).then(() => {
+                alert("✨ Votre mot de passe a été modifié avec succès ! Vous pouvez maintenant vous connecter.");
+                location.reload();
+            });
         } else {
             alert("❌ Le mot de passe est trop court ou a été annulé.");
         }
@@ -126,11 +128,18 @@ if (formInscription) {
         const tel = document.getElementById('tel-inscr').value.trim();
         const email = document.getElementById('email-inscr').value.trim();
         const mdp = document.getElementById('mdp-inscr').value;
+        
         if (utilisateurs.find(u => u.email === email)) return alert("Cet email est déjà utilisé.");
-        utilisateurs.push({ nom, tel, email, mdp });
-        localStorage.setItem('utilisateursNora', JSON.stringify(utilisateurs));
-        localStorage.setItem('utilisateurActuelNora', JSON.stringify({nom, tel, email}));
-        window.location.href = "index.html";
+        
+        // Enregistrement sur MongoDB
+        fetch('/api/utilisateurs', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nom, tel, email, mdp })
+        }).then(() => {
+            localStorage.setItem('utilisateurActuelNora', JSON.stringify({nom, tel, email}));
+            window.location.href = "index.html";
+        });
     });
 }
 
@@ -226,7 +235,7 @@ const centreGardanne = [43.4542, 5.4697];
 
 function initFreeMap() {
     const mapDiv = document.getElementById('map');
-    if (!mapDiv || map) return; // Ne charge qu'une fois
+    if (!mapDiv || map) return; 
 
     map = L.map('map').setView(centreGardanne, 11);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
@@ -249,10 +258,7 @@ async function rechercherAdresse(query) {
             for (let place of data) {
                 const latLngTest = [parseFloat(place.lat), parseFloat(place.lon)];
                 const distTest = map.distance(centreGardanne, latLngTest) / 1000;
-                if (distTest < minDistance) {
-                    minDistance = distTest;
-                    meilleurResultat = place;
-                }
+                if (distTest < minDistance) { minDistance = distTest; meilleurResultat = place; }
             }
 
             const latLngFinal = [parseFloat(meilleurResultat.lat), parseFloat(meilleurResultat.lon)];
@@ -265,18 +271,10 @@ async function rechercherAdresse(query) {
             const adresseTrouvee = meilleurResultat.display_name.split(',').slice(0, 2).join(',');
 
             if (distFinal > 15) {
-                if(errDistance) { 
-                    errDistance.style.display = 'block'; 
-                    errDistance.style.color = 'red'; 
-                    errDistance.innerHTML = `⚠️ Trop loin : <b>${distFinal.toFixed(1)}km</b>.<br>📍 <i>Trouvé : ${adresseTrouvee}</i><br>👉 Pensez à préciser votre code postal (ex: 13120).`; 
-                }
+                if(errDistance) { errDistance.style.display = 'block'; errDistance.style.color = 'red'; errDistance.innerHTML = `⚠️ Trop loin : <b>${distFinal.toFixed(1)}km</b>.<br>📍 <i>Trouvé : ${adresseTrouvee}</i><br>👉 Pensez à préciser votre code postal.`; }
                 adresseValide = false;
             } else {
-                if(errDistance) { 
-                    errDistance.style.display = 'block'; 
-                    errDistance.style.color = 'green'; 
-                    errDistance.innerHTML = `✅ Parfait ! Vous êtes à <b>${distFinal.toFixed(1)}km</b>.<br>📍 <i>Validé : ${adresseTrouvee}</i>`; 
-                }
+                if(errDistance) { errDistance.style.display = 'block'; errDistance.style.color = 'green'; errDistance.innerHTML = `✅ Parfait ! Vous êtes à <b>${distFinal.toFixed(1)}km</b>.<br>📍 <i>Validé : ${adresseTrouvee}</i>`; }
                 adresseValide = true;
             }
         }
@@ -290,7 +288,6 @@ if (formCmd) {
         e.preventDefault();
         if (panier.length === 0) return alert("Votre panier est vide.");
 
-        // DOUBLE VERROUILLAGE : LA DATE (+5 JOURS MINIMUM)
         const dateChoisie = document.getElementById('date-retrait').value;
         const minDateObj = new Date();
         minDateObj.setDate(minDateObj.getDate() + 5); 
@@ -303,14 +300,13 @@ if (formCmd) {
         const methodeChoisie = document.querySelector('input[name="recuperation"]:checked').value;
         const adresseSaisie = document.getElementById('adresse')?.value;
 
-        // VÉRIFICATION DE LA LIVRAISON (15KM MAX)
         if (methodeChoisie === 'livraison' && (!adresseValide || !adresseSaisie)) {
             return alert("Veuillez saisir une adresse valide située à moins de 15km de Gardanne.");
         }
 
         const notesSaisies = document.getElementById('notes-commande')?.value || "Aucune précision";
-
         const numCommande = "NORA-" + Math.floor(10000 + Math.random() * 90000);
+        
         const nouvelleCommande = { 
             id: numCommande, nom: document.getElementById('nom').value, 
             emailClient: utilisateurConnecte.email, tel: document.getElementById('telephone').value, 
@@ -319,29 +315,21 @@ if (formCmd) {
             date: dateChoisie, notes: notesSaisies, articles: [...panier], statut: 'recu' 
         };
         
-        // 🚀 ENVOI AU SERVEUR (MONGODB)
         fetch('/api/commandes', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(nouvelleCommande)
-        })
-        .then(response => {
+        }).then(response => {
             if (response.ok) {
                 localStorage.removeItem('panierNora');
                 envoyerMailCommande(nouvelleCommande);
                 alert(`✅ Commande confirmée ! Numéro : ${numCommande}. Un mail a été envoyé.`);
                 window.location.href = "suivi.html";
-            } else {
-                alert("❌ Erreur lors de l'enregistrement. Veuillez réessayer.");
             }
-        }).catch(err => {
-            console.error(err);
-            alert("❌ Erreur de connexion au serveur.");
         });
     });
 }
 
-// --- MODIFIER STATUT (API MongoDB) ---
 function changerStatut(indexOuId, nouveauStatut) {
     let cmd = typeof indexOuId === "number" ? commandes[indexOuId] : commandes.find(c => c.id === indexOuId);
     if (!cmd) return;
@@ -350,26 +338,25 @@ function changerStatut(indexOuId, nouveauStatut) {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ statut: nouveauStatut })
-    })
-    .then(response => {
+    }).then(response => {
         if (response.ok) {
             cmd.statut = nouveauStatut;
             if (nouveauStatut !== 'recu') { envoyerMailStatut(cmd); alert("📧 Client informé !"); }
             location.reload();
         }
-    })
-    .catch(err => console.error("Erreur mise à jour statut", err));
+    });
 }
 
-// --- CHARGER COMMANDES (MongoDB) ---
-async function chargerCommandesServeur() {
+// --- CHARGER DONNEES GLOBALES (MongoDB) ---
+async function chargerDonneesServeur() {
     try {
-        const res = await fetch('/api/commandes');
-        if (res.ok) {
-            commandes = await res.json();
-        }
+        const resCmd = await fetch('/api/commandes');
+        if (resCmd.ok) commandes = await resCmd.json();
+
+        const resUsr = await fetch('/api/utilisateurs');
+        if (resUsr.ok) utilisateurs = await resUsr.json();
     } catch (err) {
-        console.error("Impossible de charger les commandes", err);
+        console.error("Erreur serveur", err);
     }
 }
 
@@ -378,22 +365,18 @@ async function chargerCommandesServeur() {
 // ==========================================
 document.addEventListener('DOMContentLoaded', async () => {
     
-    // On charge les commandes depuis la base en ligne avant tout
-    await chargerCommandesServeur();
+    await chargerDonneesServeur();
 
-    // 1. RESTAURATION DES PRIX ET DU PANIER
     mettreAJourCompteur();
     if (document.getElementById('contenu-panier')) afficherPanier();
 
     if (utilisateurConnecte && document.getElementById('form-commande')) {
         if(document.getElementById('nom')) document.getElementById('nom').value = utilisateurConnecte.nom;
         if(document.getElementById('telephone')) document.getElementById('telephone').value = utilisateurConnecte.tel;
-        
         const totalAffiche = document.getElementById('total-commande');
         if(totalAffiche) totalAffiche.innerText = calculerTotal().toFixed(2);
     }
 
-    // 2. RESTAURATION DU CALENDRIER (+5 JOURS MINIMUM ET VIGILE)
     const dateInput = document.getElementById('date-retrait');
     let minDateStr = "";
     
@@ -416,7 +399,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // 3. RESTAURATION DE LA CARTE LEAFLET ET DU BLOCAGE À 50€
     const inputAdresse = document.getElementById('adresse');
     const radioLivraison = document.getElementById('choix-livraison');
     const radioRetrait = document.getElementById('choix-marche');
@@ -463,8 +445,5 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
     
-    // Relancer l'affichage Admin ou Suivi
-    if (typeof chargerToutesLesCommandes === 'function') {
-        chargerToutesLesCommandes();
-    }
+    if (typeof chargerToutesLesCommandes === 'function') chargerToutesLesCommandes();
 });
