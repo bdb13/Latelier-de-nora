@@ -33,7 +33,8 @@ function mettreAJourInterfaceAuth() {
                 <button class="bouton-profil">👤 ${prenom} ▼</button>
                 <div class="dropdown-content">
                     <a href="suivi.html">📦 Mes commandes</a>
-                    <a href="#" onclick="seDeconnecter()" style="color: #e74c3c;">🚪 Déconnexion</a>
+                    <a href="#" onclick="seDeconnecter()">🚪 Déconnexion</a>
+                    <a href="#" onclick="supprimerMonCompte()" style="color: #c0392b; border-top: 1px solid #f0f0f0; font-size: 0.9rem;">❌ Supprimer mon compte</a>
                     ${menuAdmin}
                 </div>
             </div>`;
@@ -42,7 +43,57 @@ function mettreAJourInterfaceAuth() {
     }
 }
 
-function seDeconnecter() { localStorage.removeItem('utilisateurActuelNora'); window.location.href = "index.html"; }
+function seDeconnecter() { 
+    localStorage.removeItem('utilisateurActuelNora'); 
+    window.location.href = "index.html"; 
+}
+
+// NOUVEAU : SUPPRESSION DE COMPTE
+function supprimerMonCompte() {
+    if (confirm("⚠️ Êtes-vous sûr de vouloir supprimer votre compte définitivement ? Cette action est irréversible.")) {
+        // On retire l'utilisateur de la liste
+        utilisateurs = utilisateurs.filter(u => u.email !== utilisateurConnecte.email);
+        localStorage.setItem('utilisateursNora', JSON.stringify(utilisateurs));
+        
+        // On le déconnecte
+        localStorage.removeItem('utilisateurActuelNora');
+        alert("Votre compte a bien été supprimé. À bientôt !");
+        window.location.href = "index.html";
+    }
+}
+
+// NOUVEAU : MOT DE PASSE OUBLIÉ
+function motDePasseOublie() {
+    let emailSaisi = prompt("🔒 Réinitialisation : \nVeuillez entrer l'adresse email de votre compte :");
+    if (!emailSaisi) return;
+    emailSaisi = emailSaisi.trim();
+
+    if (emailSaisi === "latelierdenora.stg@gmail.com") {
+        alert("⚠️ Le mot de passe administrateur est bloqué par sécurité. \n(Indice si vous l'avez oublié : latelierdenora)");
+        return;
+    }
+
+    let indexUtilisateur = utilisateurs.findIndex(u => u.email === emailSaisi);
+    if (indexUtilisateur === -1) {
+        alert("❌ Aucun compte trouvé avec cette adresse email.");
+        return;
+    }
+
+    // Vérification de sécurité par téléphone
+    let telSaisi = prompt("📱 Par mesure de sécurité, veuillez confirmer le numéro de téléphone lié à votre compte :");
+    if (telSaisi && telSaisi.replace(/\s/g, '') === utilisateurs[indexUtilisateur].tel.replace(/\s/g, '')) {
+        let nouveauMdp = prompt("✅ Identité vérifiée ! \nEntrez votre nouveau mot de passe :");
+        if (nouveauMdp && nouveauMdp.length >= 4) {
+            utilisateurs[indexUtilisateur].mdp = nouveauMdp;
+            localStorage.setItem('utilisateursNora', JSON.stringify(utilisateurs));
+            alert("✨ Votre mot de passe a été modifié avec succès ! Vous pouvez maintenant vous connecter.");
+        } else {
+            alert("❌ Le mot de passe est trop court ou a été annulé.");
+        }
+    } else {
+        alert("❌ Numéro de téléphone incorrect. La réinitialisation a été annulée.");
+    }
+}
 
 // --- CONNEXION / INSCRIPTION ---
 const formConnexion = document.getElementById('form-connexion');
@@ -75,7 +126,7 @@ if (formInscription) {
         const tel = document.getElementById('tel-inscr').value.trim();
         const email = document.getElementById('email-inscr').value.trim();
         const mdp = document.getElementById('mdp-inscr').value;
-        if (utilisateurs.find(u => u.email === email)) return alert("Email déjà utilisé.");
+        if (utilisateurs.find(u => u.email === email)) return alert("Cet email est déjà utilisé.");
         utilisateurs.push({ nom, tel, email, mdp });
         localStorage.setItem('utilisateursNora', JSON.stringify(utilisateurs));
         localStorage.setItem('utilisateurActuelNora', JSON.stringify({nom, tel, email}));
@@ -292,7 +343,6 @@ if (formCmd) {
 
 // --- MODIFIER STATUT (API MongoDB) ---
 function changerStatut(indexOuId, nouveauStatut) {
-    // Si la fonction est appelée avec un index (ancien système), on récupère la commande
     let cmd = typeof indexOuId === "number" ? commandes[indexOuId] : commandes.find(c => c.id === indexOuId);
     if (!cmd) return;
 
@@ -324,7 +374,7 @@ async function chargerCommandesServeur() {
 }
 
 // ==========================================
-// LANCEMENT GLOBAL (Restauration des options de Nora)
+// LANCEMENT GLOBAL 
 // ==========================================
 document.addEventListener('DOMContentLoaded', async () => {
     
@@ -339,7 +389,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if(document.getElementById('nom')) document.getElementById('nom').value = utilisateurConnecte.nom;
         if(document.getElementById('telephone')) document.getElementById('telephone').value = utilisateurConnecte.tel;
         
-        // C'est cette ligne qui remet le prix à jour directement
         const totalAffiche = document.getElementById('total-commande');
         if(totalAffiche) totalAffiche.innerText = calculerTotal().toFixed(2);
     }
@@ -404,7 +453,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             if(mapDiv) { 
                 mapDiv.style.display = 'block'; 
                 initFreeMap(); 
-                // La ligne magique qui empêche la carte d'être grise :
                 setTimeout(() => { if(map) map.invalidateSize(); }, 200); 
             }
         });
@@ -415,7 +463,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
     
-    // Relancer l'affichage Admin ou Suivi si leurs fonctions respectives existent
+    // Relancer l'affichage Admin ou Suivi
     if (typeof chargerToutesLesCommandes === 'function') {
         chargerToutesLesCommandes();
     }
