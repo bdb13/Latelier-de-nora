@@ -168,3 +168,94 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { background-color: 
 .separateur::before, .separateur::after { content: ""; position: absolute; top: 50%; width: 42%; height: 1px; background: #ddd; }
 .separateur::before { left: 0; } 
 .separateur::after { right: 0; }
+/* ========================================= */
+/* ADAPTATION MOBILE (TÉLÉPHONE)             */
+/* Ce code est ignoré par les ordinateurs PC */
+/* ========================================= */
+
+/* Le bouton 3 traits (caché sur PC) */
+.hamburger {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: var(--pine-green);
+    cursor: pointer;
+    margin-right: 15px;
+}
+
+@media (max-width: 768px) {
+    /* 1. Apparition du menu Hamburger */
+    .hamburger {
+        display: block;
+    }
+
+    /* 2. Transformation du Header */
+    .header-fin {
+        position: relative; 
+        justify-content: space-between;
+        padding: 10px;
+    }
+
+    /* 3. Le Menu caché qui se déroule */
+    .header-fin nav {
+        display: none; /* Caché par défaut sur tel */
+        flex-direction: column;
+        width: 100%;
+        background: white;
+        position: absolute;
+        top: 100%; 
+        left: 0;
+        box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+        padding: 0;
+        z-index: 1000;
+    }
+
+    /* Classe activée par le Javascript quand on clique */
+    .header-fin nav.mobile-open {
+        display: flex;
+        animation: glissement 0.3s ease;
+    }
+
+    @keyframes glissement {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 4. Look des liens sur Mobile */
+    .header-fin nav a {
+        padding: 15px;
+        text-align: center;
+        border-bottom: 1px solid #eee;
+        width: 100%;
+        margin: 0;
+    }
+
+    .menu-profil .dropdown-content {
+        position: static;
+        box-shadow: none;
+        background: #fdfcf8;
+    }
+
+    .bouton-profil {
+        width: 100%;
+        border-radius: 0;
+        padding: 15px;
+    }
+
+    /* 5. Adaptation des gros blocs et formulaires */
+    main {
+        padding: 15px !important;
+    }
+
+    .connexion-container, .formulaire-commande, .order-card {
+        margin: 15px auto !important;
+        padding: 20px !important;
+        width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    h2 {
+        font-size: 1.8rem !important;
+    }
+}
