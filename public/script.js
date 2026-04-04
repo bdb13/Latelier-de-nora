@@ -14,7 +14,11 @@ let utilisateurs = []; // Depuis MongoDB
 // --- GESTION ACCÈS & AUTH ---
 function verifierAccesPages() {
     const pageActuelle = window.location.pathname;
-    if (pageActuelle.includes("suivi.html") && !utilisateurConnecte) window.location.href = "connexion.html";
+    // VIGILE : On bloque Suivi ET Commande si non connecté
+    if ((pageActuelle.includes("suivi.html") || pageActuelle.includes("commande.html")) && !utilisateurConnecte) {
+        window.location.href = "connexion.html";
+    }
+    // VIGILE : On bloque l'Admin si ce n'est pas Nora
     if (pageActuelle.includes("admin.html") && (!utilisateurConnecte || utilisateurConnecte.email !== "latelierdenora.stg@gmail.com")) {
         window.location.href = "index.html";
     }
@@ -143,9 +147,10 @@ if (formInscription) {
     });
 }
 
-function switchForm(v){
-    document.getElementById('bloc-connexion').style.display=v?'none':'block'; 
-    document.getElementById('bloc-inscription').style.display=v?'block':'none';
+// CORRECTION BUG : INVERSION D'AFFICHAGE
+function switchForm(versConnexion) {
+    document.getElementById('bloc-connexion').style.display = versConnexion ? 'block' : 'none'; 
+    document.getElementById('bloc-inscription').style.display = versConnexion ? 'none' : 'block';
 }
 
 // --- FONCTIONS EMAILS ---
@@ -286,6 +291,8 @@ const formCmd = document.getElementById('form-commande');
 if (formCmd) {
     formCmd.addEventListener('submit', (e) => {
         e.preventDefault();
+        // Ultime vérification de sécurité (si l'utilisateur a contourné la redirection)
+        if (!utilisateurConnecte) return alert("❌ Vous devez être connecté pour commander.");
         if (panier.length === 0) return alert("Votre panier est vide.");
 
         const dateChoisie = document.getElementById('date-retrait').value;
