@@ -235,7 +235,32 @@ async function rechercherAdresse(query) {
 // --- SOUMISSION DE LA COMMANDE ---
 const formCmd = document.getElementById('form-commande');
 if (formCmd) {
-    const nouvelleCommande = { 
+    formCmd.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (panier.length === 0) return alert("Votre panier est vide.");
+
+        // DOUBLE VERROUILLAGE : LA DATE (+5 JOURS MINIMUM)
+        const dateChoisie = document.getElementById('date-retrait').value;
+        const minDateObj = new Date();
+        minDateObj.setDate(minDateObj.getDate() + 5); 
+        const minDateVerification = `${minDateObj.getFullYear()}-${String(minDateObj.getMonth() + 1).padStart(2, '0')}-${String(minDateObj.getDate()).padStart(2, '0')}`;
+        
+        if (dateChoisie < minDateVerification) {
+            return alert("⚠️ La date choisie est trop proche. L'Atelier a besoin de 5 jours minimum pour préparer votre commande.");
+        }
+
+        const methodeChoisie = document.querySelector('input[name="recuperation"]:checked').value;
+        const adresseSaisie = document.getElementById('adresse')?.value;
+
+        // VÉRIFICATION DE LA LIVRAISON (15KM MAX)
+        if (methodeChoisie === 'livraison' && (!adresseValide || !adresseSaisie)) {
+            return alert("Veuillez saisir une adresse valide située à moins de 15km de Gardanne.");
+        }
+
+        const notesSaisies = document.getElementById('notes-commande')?.value || "Aucune précision";
+
+        const numCommande = "NORA-" + Math.floor(10000 + Math.random() * 90000);
+        const nouvelleCommande = { 
             id: numCommande, nom: document.getElementById('nom').value, 
             emailClient: utilisateurConnecte.email, tel: document.getElementById('telephone').value, 
             total: calculerTotal(), methode: methodeChoisie, 
@@ -243,20 +268,15 @@ if (formCmd) {
             date: dateChoisie, notes: notesSaisies, articles: [...panier], statut: 'recu' 
         };
         
-        // 🚀 ENVOI AU SERVEUR (MONGODB)
-        fetch('/api/commandes', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(nouvelleCommande)
-        })
-        .then(response => {
-            if (response.ok) {
-                localStorage.removeItem('panierNora');
-                envoyerMailCommande(nouvelleCommande); // On garde ton EmailJS intact !
-                alert(`✅ Commande confirmée ! Numéro : ${numCommande}.`);
-                window.location.href = "suivi.html";
-            }
-        });
+        commandes.push(nouvelleCommande);
+        localStorage.setItem('commandesNora', JSON.stringify(commandes));
+        localStorage.removeItem('panierNora');
+        envoyerMailCommande(nouvelleCommande);
+        
+        alert(`✅ Commande confirmée ! Numéro : ${numCommande}. Un mail a été envoyé.`);
+        window.location.href = "suivi.html";
+    });
+}
 
 function changerStatut(index, nouveauStatut) {
     commandes[index].statut = nouveauStatut;
