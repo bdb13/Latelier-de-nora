@@ -77,8 +77,19 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             // Nettoyage des vieilles commandes fantômes
-            commandesValides = commandes.filter(c => c && c.id);
+let commandesValides = [];
+
+        async function chargerToutesLesCommandes() {
+            const response = await fetch('/api/commandes');
+            commandesValides = await response.json();
             
+            // On relance l'affichage avec les vraies données de la base
+            genererStats();
+            genererCalendrier();
+            genererListeCommandes();
+        }
+
+        document.addEventListener('DOMContentLoaded', chargerToutesLesCommandes);            
             genererStats();
             genererCalendrier();
             genererListeCommandes();
