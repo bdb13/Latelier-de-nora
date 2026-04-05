@@ -212,43 +212,60 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { background-color: 
     .btn-qte { padding: 12px 25px; }
     .action-produit .bouton { width: 100%; text-align: center; }
 
-    /* --- CORRECTION ADMIN MOBILE : Alignement vertical forcé --- */
+    /* --- CORRECTION ADMIN MOBILE --- */
     .admin-dashboard { margin: 15px auto !important; padding: 0 10px !important; }
     .admin-section { padding: 15px !important; margin-bottom: 20px !important; width: 100%; box-sizing: border-box; }
     
     .admin-stats { flex-direction: column !important; gap: 15px; display: flex !important; width: 100%; }
     .stat-card { width: 100% !important; min-width: 100% !important; margin: 0 !important; box-sizing: border-box; }
     
-    /* Bloc boutons navigation calendrier : Forcer l'alignement centré */
+    /* Bloc boutons navigation calendrier : Alignement centré parfait */
     .admin-section > div:first-child { flex-direction: column !important; text-align: center; gap: 15px; }
     .admin-section > div:first-child > div { display: flex; justify-content: center; align-items: center; width: 100%; gap: 10px; flex-wrap: wrap; }
-    .btn-nav-cal { padding: 8px 12px; font-size: 0.85rem; }
-    #titre-mois { font-size: 1rem !important; margin: 0 !important; }
+    .btn-nav-cal { padding: 8px 15px; font-size: 0.95rem; }
+    #titre-mois { font-size: 1.1rem !important; margin: 0 !important; font-weight: bold; color: var(--pine-green); }
 
-    /* CALENDRIER VUE GRILLE SUR MOBILE : 3 Colonnes pour une meilleure vue d'ensemble */
+    /* --- VUE AGENDA (MODE LISTE) POUR LE CALENDRIER MOBILE --- */
     .calendar-grid {
-        display: grid !important;
-        grid-template-columns: repeat(3, 1fr) !important;
-        gap: 8px;
+        display: flex !important;
+        flex-direction: column !important; /* On empile les jours de haut en bas */
+        gap: 12px;
+        width: 100%;
         overflow-x: hidden !important;
-        padding-bottom: 0;
+        padding-bottom: 10px;
     }
     .calendar-day {
-        min-height: 70px !important;
-        padding: 5px !important;
+        min-height: auto !important;
+        padding: 15px !important;
+        display: flex !important;
+        flex-direction: column;
+        align-items: flex-start; /* Aligne le texte à gauche */
+        border-left: 5px solid var(--gold-accent); /* Joli liseré doré sur le côté */
     }
-    .date-jour { font-size: 0.9rem !important; }
-    
-    /* Limiter le texte des noms dans les cases pour ne pas casser la grille */
+    .calendar-day > div:last-child {
+        display: flex;
+        flex-wrap: wrap; /* Les commandes s'alignent proprement */
+        gap: 8px;
+        width: 100%;
+        margin-top: 10px;
+    }
+    .date-jour { 
+        font-size: 1.1rem !important; 
+        color: var(--pine-green);
+        border-bottom: 1px solid #eee;
+        width: 100%;
+        text-align: left;
+        padding-bottom: 5px;
+    }
     .pastille-cmd { 
-        font-size: 0.75rem !important; 
-        padding: 4px !important; 
-        margin-bottom: 4px !important; 
-        white-space: nowrap; 
-        overflow: hidden; 
-        text-overflow: ellipsis; 
+        font-size: 0.95rem !important; 
+        padding: 6px 12px !important; 
+        margin-bottom: 0 !important; 
+        white-space: normal; /* Le texte de la commande n'est plus coupé */
+        width: auto;
     }
-    
+    /* Les jours vides restent cachés par défaut grâce à la règle PC */
+
     /* La commande passe à la verticale sans déborder */
     .order-card { flex-direction: column !important; align-items: flex-start !important; padding: 15px !important; }
     .order-info { width: 100%; margin-bottom: 15px; word-wrap: break-word; overflow-wrap: break-word; }
