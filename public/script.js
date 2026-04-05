@@ -171,6 +171,29 @@ async function envoyerMailStatut(commande) {
     return emailjs.send(EMAILJS_SERVICE_ID, TEMPLATE_CHANGEMENT_STATUT, { to_name: commande.nom, to_email: commande.emailClient, order_id: commande.id, statut_label: texteStatut });
 }
 
+// --- FONCTION WHATSAPP ---
+function envoyerWhatsApp(idCmd) {
+    const cmd = commandes.find(c => c.id === idCmd);
+    if (!cmd) return;
+
+    let prenom = cmd.nom.split(' ')[0];
+    let texteHeure = cmd.methode === 'stand' ? 'le matin entre 8h et 12h' : `à ${cmd.heure}`;
+    let dateF = new Date(cmd.date).toLocaleDateString('fr-FR');
+    
+    let phraseStatut = "";
+    if(cmd.statut === 'recu') phraseStatut = "est bien enregistrée ! ✨";
+    else if(cmd.statut === 'preparation') phraseStatut = "est maintenant en préparation... 🍪";
+    else phraseStatut = "est prête ! Tu peux venir la récupérer. ✨";
+
+    let modeTexte = cmd.methode === 'stand' ? 'Marché de Gardanne' : (cmd.methode === 'maison' ? 'Retrait chez Nora' : 'Livraison');
+    let message = `Coucou ${prenom} ! C'est Nora de l'Atelier. Ta commande ${cmd.id} ${phraseStatut}\n\n📅 Prévue le : ${dateF} ${texteHeure}\n📦 Mode : ${modeTexte}\n\nÀ très vite ! 👩‍🍳`;
+    
+    let telPropre = cmd.tel.replace(/\s/g, '');
+    if (telPropre.startsWith('0')) telPropre = '33' + telPropre.substring(1);
+
+    window.open(`https://wa.me/${telPropre}?text=${encodeURIComponent(message)}`, '_blank');
+}
+
 // --- GESTION PANIER ---
 function modifierQuantiteProduit(ch) { let i = document.getElementById('qte-produit'); if(i){let n=parseInt(i.value)+ch; if(n>=1)i.value=n;} }
 function ajouterDepuisProduit(n,p,im) { ajouterAuPanier(n,p,im,parseInt(document.getElementById('qte-produit')?.value || 1)); }
@@ -394,11 +417,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         minDateStr = `${minDate.getFullYear()}-${String(minDate.getMonth() + 1).padStart(2, '0')}-${String(minDate.getDate()).padStart(2, '0')}`;
         dateInput.setAttribute('min', minDateStr);
 
-        // Remplacement de 'change' par 'input' avec correction silencieuse !
         dateInput.addEventListener('input', (e) => {
             let valeurDate = e.target.value;
             
-            // Si le champ est vidé (pendant qu'on tourne la roulette sur iPhone), on ne fait rien
+            // CORRECTION CALENDRIER MOBILE : Si on efface/tourne la roulette, on ne fait rien
             if (!valeurDate) { 
                 if (blocHeure) blocHeure.style.display = 'none';
                 if (msgStand) msgStand.style.display = 'none';
@@ -406,7 +428,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return; 
             }
 
-            // CORRECTION SILENCIEUSE : Pas d'alerte. Si on choisit aujourd'hui, le site bascule direct sur la date min autorisée.
+            // CORRECTION SILENCIEUSE : Force la date minimale au lieu de spammer d'alertes
             if (valeurDate < minDateStr) { 
                 e.target.value = minDateStr; 
                 valeurDate = minDateStr;
@@ -415,7 +437,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             let jourChoisi = new Date(valeurDate).getDay();
             let modeActuel = document.querySelector('input[name="recuperation"]:checked').value;
 
-            // On garde l'alerte uniquement si le jour de la semaine est invalide pour le stand
+            // Bloque les jours hors marché pour le Stand
             if (modeActuel === 'stand' && ![0, 3, 5].includes(jourChoisi)) {
                 alert("❌ Le marché de Gardanne n'a lieu que les Mercredis, Vendredis et Dimanches. Veuillez choisir une de ces dates.");
                 e.target.value = ''; 
