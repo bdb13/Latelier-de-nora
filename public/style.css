@@ -180,7 +180,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { background-color: 
 .hamburger { display: none; background: none; border: none; font-size: 2.5rem; color: var(--gold-accent); cursor: pointer; padding: 0; margin: 0; }
 
 @media (max-width: 768px) {
-    .header-fin { position: sticky; top: 0; z-index: 9999; flex-direction: row; justify-content: space-between; align-items: center; padding: 15px 20px; }
+    .header-fin { position: sticky; top: 0; z-index: 9999; flex-direction: row; justify-content: space-between; align-items: center; padding: 15px 20px; width: 100%; box-sizing: border-box; left: 0; right: 0; }
     .logo-titre { flex-direction: row; align-items: baseline; gap: 8px; }
     .logo-titre .script { font-size: 1.8rem; margin: 0; }
     .logo-titre .serif { font-size: 1.2rem; margin: 0; }
@@ -203,7 +203,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { background-color: 
 
     main:not(.accueil-hero) { padding: 15px !important; }
     .carte { width: 100%; max-width: 350px; }
-    .panier-container, .formulaire-commande, .connexion-container, .details { margin: 15px auto !important; padding: 20px !important; border-top: 3px solid var(--gold-accent); }
+    .panier-container, .formulaire-commande, .connexion-container, .details { margin: 15px auto !important; padding: 20px !important; width: 100% !important; box-sizing: border-box; border-top: 3px solid var(--gold-accent); }
     .details h2 { font-size: 1.8rem; }
     .prix-gros { font-size: 1.5rem; }
     
@@ -212,23 +212,46 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { background-color: 
     .btn-qte { padding: 12px 25px; }
     .action-produit .bouton { width: 100%; text-align: center; }
 
-    /* --- CORRECTION ADMIN MOBILE : Tout est forcé dans l'écran --- */
+    /* --- CORRECTION ADMIN MOBILE : Alignement vertical forcé --- */
     .admin-dashboard { margin: 15px auto !important; padding: 0 10px !important; }
-    .admin-section { padding: 15px !important; margin-bottom: 20px !important; }
+    .admin-section { padding: 15px !important; margin-bottom: 20px !important; width: 100%; box-sizing: border-box; }
     
-    .admin-stats { flex-direction: column !important; gap: 15px; display: flex !important; }
-    .stat-card { width: 100% !important; min-width: 100% !important; margin: 0 !important; }
+    .admin-stats { flex-direction: column !important; gap: 15px; display: flex !important; width: 100%; }
+    .stat-card { width: 100% !important; min-width: 100% !important; margin: 0 !important; box-sizing: border-box; }
     
+    /* Bloc boutons navigation calendrier : Forcer l'alignement centré */
     .admin-section > div:first-child { flex-direction: column !important; text-align: center; gap: 15px; }
+    .admin-section > div:first-child > div { display: flex; justify-content: center; align-items: center; width: 100%; gap: 10px; flex-wrap: wrap; }
+    .btn-nav-cal { padding: 8px 12px; font-size: 0.85rem; }
+    #titre-mois { font-size: 1rem !important; margin: 0 !important; }
+
+    /* CALENDRIER VUE GRILLE SUR MOBILE : 3 Colonnes pour une meilleure vue d'ensemble */
+    .calendar-grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 8px;
+        overflow-x: hidden !important;
+        padding-bottom: 0;
+    }
+    .calendar-day {
+        min-height: 70px !important;
+        padding: 5px !important;
+    }
+    .date-jour { font-size: 0.9rem !important; }
+    
+    /* Limiter le texte des noms dans les cases pour ne pas casser la grille */
+    .pastille-cmd { 
+        font-size: 0.75rem !important; 
+        padding: 4px !important; 
+        margin-bottom: 4px !important; 
+        white-space: nowrap; 
+        overflow: hidden; 
+        text-overflow: ellipsis; 
+    }
     
     /* La commande passe à la verticale sans déborder */
     .order-card { flex-direction: column !important; align-items: flex-start !important; padding: 15px !important; }
-    
-    /* On empêche les liens (emails, adresses) de casser la largeur */
     .order-info { width: 100%; margin-bottom: 15px; word-wrap: break-word; overflow-wrap: break-word; }
     .order-info a { word-break: break-all; } 
-
     .order-actions { width: 100% !important; margin-left: 0; text-align: center; }
-    .btn-nav-cal { padding: 8px 12px; font-size: 0.85rem; }
-    #titre-mois { font-size: 1rem !important; margin: 0 5px !important; }
 }
