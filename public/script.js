@@ -54,56 +54,31 @@ function mettreAJourInterfaceAuth() {
     }
 }
 
-function seDeconnecter() { 
-    localStorage.removeItem('utilisateurActuelNora'); 
-    window.location.href = "index.html"; 
-}
+function seDeconnecter() { localStorage.removeItem('utilisateurActuelNora'); window.location.href = "index.html"; }
 
 function supprimerMonCompte() {
     if (confirm("⚠️ Êtes-vous sûr de vouloir supprimer votre compte définitivement ? Cette action est irréversible.")) {
         fetch(`/api/utilisateurs/${utilisateurConnecte.email}`, { method: 'DELETE' })
-        .then(() => {
-            localStorage.removeItem('utilisateurActuelNora');
-            alert("Votre compte a bien été supprimé. À bientôt !");
-            window.location.href = "index.html";
-        });
+        .then(() => { localStorage.removeItem('utilisateurActuelNora'); alert("Votre compte a bien été supprimé. À bientôt !"); window.location.href = "index.html"; });
     }
 }
 
 function motDePasseOublie() {
     let emailSaisi = prompt("🔒 Réinitialisation : \nVeuillez entrer l'adresse email de votre compte :");
-    if (!emailSaisi) return;
-    emailSaisi = emailSaisi.trim();
-
-    if (emailSaisi === "latelierdenora.stg@gmail.com") {
-        alert("⚠️ Le mot de passe administrateur est bloqué par sécurité.");
-        return;
-    }
+    if (!emailSaisi) return; emailSaisi = emailSaisi.trim();
+    if (emailSaisi === "latelierdenora.stg@gmail.com") { alert("⚠️ Le mot de passe administrateur est bloqué par sécurité."); return; }
 
     let indexUtilisateur = utilisateurs.findIndex(u => u.email === emailSaisi);
-    if (indexUtilisateur === -1) {
-        alert("❌ Aucun compte trouvé avec cette adresse email.");
-        return;
-    }
+    if (indexUtilisateur === -1) { alert("❌ Aucun compte trouvé avec cette adresse email."); return; }
 
     let telSaisi = prompt("📱 Par mesure de sécurité, veuillez confirmer le numéro de téléphone lié à votre compte :");
     if (telSaisi && telSaisi.replace(/\s/g, '') === utilisateurs[indexUtilisateur].tel.replace(/\s/g, '')) {
         let nouveauMdp = prompt("✅ Identité vérifiée ! \nEntrez votre nouveau mot de passe :");
         if (nouveauMdp && nouveauMdp.length >= 4) {
-            fetch(`/api/utilisateurs/${emailSaisi}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mdp: nouveauMdp })
-            }).then(() => {
-                alert("✨ Votre mot de passe a été modifié avec succès ! Vous pouvez maintenant vous connecter.");
-                location.reload();
-            });
-        } else {
-            alert("❌ Le mot de passe est trop court ou a été annulé.");
-        }
-    } else {
-        alert("❌ Numéro de téléphone incorrect. La réinitialisation a été annulée.");
-    }
+            fetch(`/api/utilisateurs/${emailSaisi}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mdp: nouveauMdp }) })
+            .then(() => { alert("✨ Votre mot de passe a été modifié avec succès ! Vous pouvez maintenant vous connecter."); location.reload(); });
+        } else { alert("❌ Le mot de passe est trop court ou a été annulé."); }
+    } else { alert("❌ Numéro de téléphone incorrect. La réinitialisation a été annulée."); }
 }
 
 // --- CONNEXION / INSCRIPTION ---
@@ -118,8 +93,7 @@ if (formConnexion) {
 
         if (email === "latelierdenora.stg@gmail.com" && mdp === "latelierdenora") {
             localStorage.setItem('utilisateurActuelNora', JSON.stringify({ nom: "Nora (Admin)", email: email }));
-            window.location.href = "admin.html";
-            return;
+            window.location.href = "admin.html"; return;
         }
 
         const userTrouve = utilisateurs.find(u => u.email === email && u.mdp === mdp);
@@ -140,14 +114,8 @@ if (formInscription) {
         
         if (utilisateurs.find(u => u.email === email)) return alert("Cet email est déjà utilisé.");
         
-        fetch('/api/utilisateurs', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nom, tel, email, mdp })
-        }).then(() => {
-            localStorage.setItem('utilisateurActuelNora', JSON.stringify({nom, tel, email}));
-            window.location.href = "index.html";
-        });
+        fetch('/api/utilisateurs', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nom, tel, email, mdp }) })
+        .then(() => { localStorage.setItem('utilisateurActuelNora', JSON.stringify({nom, tel, email})); window.location.href = "index.html"; });
     });
 }
 
@@ -159,17 +127,13 @@ function switchForm(versConnexion) {
 // --- FONCTIONS EMAILS ---
 async function envoyerMailCommande(commande) {
     if (typeof emailjs === 'undefined') return;
-    
-    // NOUVEAU: Formatage de l'heure pour l'email
     let texteHeure = commande.methode === 'stand' ? 'Matin (8h - 12h)' : commande.heure;
-    let texteDateEtHeure = `${new Date(commande.date).toLocaleDateString('fr-FR')} à ${texteHeure}`;
-
+    
     const templateParams = {
         to_name: commande.nom, to_email: commande.emailClient, admin_email: "latelierdenora.stg@gmail.com",
         order_id: commande.id, total: commande.total.toFixed(2),
-        date: texteDateEtHeure,
-        articles: commande.articles.map(a => `${a.quantite}x ${a.nom}`).join(', '),
-        notes: commande.notes
+        date: `${new Date(commande.date).toLocaleDateString('fr-FR')} à ${texteHeure}`,
+        articles: commande.articles.map(a => `${a.quantite}x ${a.nom}`).join(', '), notes: commande.notes
     };
     await emailjs.send(EMAILJS_SERVICE_ID, TEMPLATE_NOUVELLE_COMMANDE, templateParams);
     templateParams.to_email = "latelierdenora.stg@gmail.com"; templateParams.to_name = "Nora";
@@ -179,12 +143,7 @@ async function envoyerMailCommande(commande) {
 async function envoyerMailStatut(commande) {
     if (typeof emailjs === 'undefined') return;
     let texteStatut = commande.statut === 'preparation' ? "est maintenant en préparation" : "est prête !";
-    return emailjs.send(EMAILJS_SERVICE_ID, TEMPLATE_CHANGEMENT_STATUT, { 
-        to_name: commande.nom, 
-        to_email: commande.emailClient, 
-        order_id: commande.id, 
-        statut_label: texteStatut 
-    });
+    return emailjs.send(EMAILJS_SERVICE_ID, TEMPLATE_CHANGEMENT_STATUT, { to_name: commande.nom, to_email: commande.emailClient, order_id: commande.id, statut_label: texteStatut });
 }
 
 // --- GESTION PANIER ---
@@ -202,38 +161,16 @@ function mettreAJourCompteur() {
 function calculerTotal(){return panier.reduce((t,i)=>t+(i.prix*i.quantite),0);}
 
 function afficherPanier() {
-    const conteneur = document.getElementById('contenu-panier');
-    const affichageTotal = document.getElementById('total-panier');
-    const btnValider = document.getElementById('btn-valider');
+    const conteneur = document.getElementById('contenu-panier'); const affichageTotal = document.getElementById('total-panier'); const btnValider = document.getElementById('btn-valider');
     if (!conteneur) return;
-
-    if (panier.length === 0) {
-        conteneur.innerHTML = "<p style='text-align:center;'>Votre panier est vide.</p>";
-        if(btnValider) btnValider.style.display = 'none';
-        if(affichageTotal) affichageTotal.innerText = "0.00";
-        return;
-    }
-
+    if (panier.length === 0) { conteneur.innerHTML = "<p style='text-align:center;'>Votre panier est vide.</p>"; if(btnValider) btnValider.style.display = 'none'; if(affichageTotal) affichageTotal.innerText = "0.00"; return; }
     let html = ''; let totalG = 0;
     panier.forEach((item, index) => {
         let st = item.prix * item.quantite; totalG += st;
-        html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid #eee;">
-            <div style="display:flex; align-items:center; gap:15px;">
-                <img src="${item.image}" style="width:50px; height:50px; border-radius:5px; object-fit:cover;">
-                <div><b style="color:var(--pine-green);">${item.nom}</b><br>
-                <input type="number" value="${item.quantite}" min="1" onchange="modifierQte(${index}, this.value)" style="width:40px;"></div>
-            </div>
-            <span style="color:var(--gold-accent); font-weight:bold;">${st.toFixed(2)} €</span>
-            <button onclick="supprimerArticle(${index})" style="color:red; border:none; background:none; cursor:pointer;">✕</button>
-        </div>`;
+        html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:15px 0; border-bottom:1px solid #eee;"><div style="display:flex; align-items:center; gap:15px;"><img src="${item.image}" style="width:50px; height:50px; border-radius:5px; object-fit:cover;"><div><b style="color:var(--pine-green);">${item.nom}</b><br><input type="number" value="${item.quantite}" min="1" onchange="modifierQte(${index}, this.value)" style="width:40px;"></div></div><span style="color:var(--gold-accent); font-weight:bold;">${st.toFixed(2)} €</span><button onclick="supprimerArticle(${index})" style="color:red; border:none; background:none; cursor:pointer;">✕</button></div>`;
     });
-    conteneur.innerHTML = html;
-    if(affichageTotal) affichageTotal.innerText = totalG.toFixed(2);
-    if(btnValider) {
-        btnValider.style.display = 'block';
-        btnValider.innerText = utilisateurConnecte ? "Passer à la commande" : "Connectez-vous pour commander";
-        btnValider.onclick = () => { window.location.href = utilisateurConnecte ? "commande.html" : "connexion.html"; };
-    }
+    conteneur.innerHTML = html; if(affichageTotal) affichageTotal.innerText = totalG.toFixed(2);
+    if(btnValider) { btnValider.style.display = 'block'; btnValider.innerText = utilisateurConnecte ? "Passer à la commande" : "Connectez-vous pour commander"; btnValider.onclick = () => { window.location.href = utilisateurConnecte ? "commande.html" : "connexion.html"; }; }
 }
 function modifierQte(i, v) { panier[i].quantite = Math.max(1, parseInt(v)||1); localStorage.setItem('panierNora', JSON.stringify(panier)); mettreAJourCompteur(); afficherPanier(); }
 function supprimerArticle(i) { panier.splice(i, 1); localStorage.setItem('panierNora', JSON.stringify(panier)); mettreAJourCompteur(); afficherPanier(); }
@@ -245,20 +182,18 @@ function afficherToast(m) {
 }
 
 // ==========================================
-// CARTE GRATUITE (LEAFLET) ET COMMANDE
+// CARTES, ADRESSES & HORAIRES
 // ==========================================
 let adresseValide = false; 
-let map; 
-let markerClient;
+let map; let markerClient;
+let mapNora; const coordNora = [43.454482, 5.487940];
 const centreGardanne = [43.4542, 5.4697];
 
 function initFreeMap() {
     const mapDiv = document.getElementById('map');
     if (!mapDiv || map) return; 
-
     map = L.map('map').setView(centreGardanne, 11);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
-
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OSM' }).addTo(map);
     L.circle(centreGardanne, { color: '#c5a059', fillColor: '#c5a059', fillOpacity: 0.15, radius: 15000 }).addTo(map);
     L.marker(centreGardanne).addTo(map).bindPopup("L'atelier de NORA").openPopup();
 }
@@ -268,66 +203,53 @@ async function rechercherAdresse(query) {
     try {
         const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=fr&limit=5`);
         const data = await res.json();
-        
         if (data && data.length > 0) {
             const errDistance = document.getElementById('erreur-distance');
-            let meilleurResultat = data[0];
-            let minDistance = Infinity;
-
+            let meilleurResultat = data[0]; let minDistance = Infinity;
             for (let place of data) {
                 const latLngTest = [parseFloat(place.lat), parseFloat(place.lon)];
                 const distTest = map.distance(centreGardanne, latLngTest) / 1000;
                 if (distTest < minDistance) { minDistance = distTest; meilleurResultat = place; }
             }
-
             const latLngFinal = [parseFloat(meilleurResultat.lat), parseFloat(meilleurResultat.lon)];
             const distFinal = minDistance;
-
             if (markerClient) map.removeLayer(markerClient);
-            markerClient = L.marker(latLngFinal).addTo(map);
-            map.setView(latLngFinal, 13);
-
+            markerClient = L.marker(latLngFinal).addTo(map); map.setView(latLngFinal, 13);
             const adresseTrouvee = meilleurResultat.display_name.split(',').slice(0, 2).join(',');
 
             if (distFinal > 15) {
-                if(errDistance) { errDistance.style.display = 'block'; errDistance.style.color = 'red'; errDistance.innerHTML = `⚠️ Trop loin : <b>${distFinal.toFixed(1)}km</b>.<br>📍 <i>Trouvé : ${adresseTrouvee}</i><br>👉 Pensez à préciser votre code postal.`; }
+                if(errDistance) { errDistance.style.display = 'block'; errDistance.style.color = 'red'; errDistance.innerHTML = `⚠️ Trop loin : <b>${distFinal.toFixed(1)}km</b>.<br>📍 <i>Trouvé : ${adresseTrouvee}</i><br>👉 Précisez votre code postal.`; }
                 adresseValide = false;
             } else {
-                if(errDistance) { errDistance.style.display = 'block'; errDistance.style.color = 'green'; errDistance.innerHTML = `✅ Parfait ! Vous êtes à <b>${distFinal.toFixed(1)}km</b>.<br>📍 <i>Validé : ${adresseTrouvee}</i>`; }
+                if(errDistance) { errDistance.style.display = 'block'; errDistance.style.color = 'green'; errDistance.innerHTML = `✅ Parfait ! <b>${distFinal.toFixed(1)}km</b>.<br>📍 <i>Validé : ${adresseTrouvee}</i>`; }
                 adresseValide = true;
             }
         }
-    } catch (error) { console.error("Erreur:", error); }
+    } catch (error) { console.error(error); }
 }
 
-// LOGIQUE DE GÉNÉRATION DES HEURES
 function genererHeuresLibres(dateChoisieStr, jourSemaine) {
     const heureSelect = document.getElementById('heure-retrait');
     if (!heureSelect) return;
-    
     heureSelect.innerHTML = '<option value="" disabled selected>Choisissez une heure</option>';
     
-    // Si c'est un jour de marché (0=Dimanche, 3=Mercredi, 5=Vendredi), on commence à 13h
+    // De 13h à 19h les jours de marché (0,3,5), sinon de 9h à 19h.
     let heureDebut = ([0, 3, 5].includes(jourSemaine)) ? 13 : 9;
     let heureFin = 19;
-
     let commandesCeJour = commandes.filter(c => c.date === dateChoisieStr && c.methode !== 'stand');
 
     for (let h = heureDebut; h <= heureFin; h++) {
         ['00', '30'].forEach(min => {
-            if (h === 19 && min === '30') return; // Dernière heure à 19h00
+            if (h === 19 && min === '30') return; 
             
             let formatHeure = `${String(h).padStart(2, '0')}:${min}`;
             let option = document.createElement('option');
             option.value = formatHeure;
 
-            // Vérifie si le créneau est déjà pris par un autre client
+            // Bloque si le créneau est déjà pris
             let estPris = commandesCeJour.some(c => c.heure === formatHeure);
-            
             if (estPris) {
-                option.disabled = true;
-                option.innerText = `❌ ${formatHeure} - Indisponible`;
-                option.style.color = "red";
+                option.disabled = true; option.innerText = `❌ ${formatHeure} - Indisponible`; option.style.color = "red";
             } else {
                 option.innerText = `✅ ${formatHeure}`;
             }
@@ -344,8 +266,7 @@ if (formCmd) {
         if (panier.length === 0) return alert("Votre panier est vide.");
 
         const dateChoisie = document.getElementById('date-retrait').value;
-        const minDateObj = new Date();
-        minDateObj.setDate(minDateObj.getDate() + 5); 
+        const minDateObj = new Date(); minDateObj.setDate(minDateObj.getDate() + 5); 
         const minDateVerification = `${minDateObj.getFullYear()}-${String(minDateObj.getMonth() + 1).padStart(2, '0')}-${String(minDateObj.getDate()).padStart(2, '0')}`;
         
         if (dateChoisie < minDateVerification) {
@@ -353,45 +274,37 @@ if (formCmd) {
         }
 
         const methodeChoisie = document.querySelector('input[name="recuperation"]:checked').value;
+        let heureChoisie = "08:00 - 12:00"; 
         
-        // VÉRIFICATION DE L'HEURE ET DE L'EXCLUSIVITÉ
-        let heureChoisie = "08:00 - 12:00"; // Par défaut pour le stand
         if (methodeChoisie !== 'stand') {
             heureChoisie = document.getElementById('heure-retrait').value;
             if (!heureChoisie) return alert("⚠️ Veuillez sélectionner une heure de récupération.");
             
             let estPris = commandes.some(c => c.date === dateChoisie && c.heure === heureChoisie && c.methode !== 'stand');
-            if (estPris) {
-                return alert("Désolé, ce créneau vient tout juste d'être réservé par un autre client. Veuillez choisir une autre heure.");
-            }
+            if (estPris) return alert("Désolé, ce créneau vient d'être réservé par un autre client. Veuillez choisir une autre heure.");
         }
 
         const adresseSaisie = document.getElementById('adresse')?.value;
-
         if (methodeChoisie === 'livraison' && (!adresseValide || !adresseSaisie)) {
             return alert("Veuillez saisir une adresse valide située à moins de 15km de Gardanne.");
         }
 
-        const notesSaisies = document.getElementById('notes-commande')?.value || "Aucune précision";
+        const notesValue = document.getElementById('notes-commande')?.value.trim();
+        const notesSaisies = (notesValue && notesValue !== "") ? notesValue : "Aucune précision";
         const numCommande = "NORA-" + Math.floor(10000 + Math.random() * 90000);
         
         let adresseFinale = "Retrait au Stand";
-        if (methodeChoisie === 'maison') adresseFinale = "Retrait chez Nora (43.454482, 5.487940)";
+        if (methodeChoisie === 'maison') adresseFinale = document.getElementById('adresse-nora-texte').innerText.replace('Chargement de l\'adresse...', 'Retrait chez Nora');
         if (methodeChoisie === 'livraison') adresseFinale = adresseSaisie;
 
         const nouvelleCommande = { 
             id: numCommande, nom: document.getElementById('nom').value, 
             emailClient: utilisateurConnecte.email, tel: document.getElementById('telephone').value, 
-            total: calculerTotal(), methode: methodeChoisie, 
-            adresse: adresseFinale, 
+            total: calculerTotal(), methode: methodeChoisie, adresse: adresseFinale, 
             date: dateChoisie, heure: heureChoisie, notes: notesSaisies, articles: [...panier], statut: 'recu' 
         };
         
-        const res = await fetch('/api/commandes', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(nouvelleCommande)
-        });
+        const res = await fetch('/api/commandes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(nouvelleCommande) });
 
         if (res.ok) {
             localStorage.removeItem('panierNora');
@@ -406,13 +319,7 @@ if (formCmd) {
 async function changerStatut(indexOuId, nouveauStatut) {
     let cmd = typeof indexOuId === "number" ? commandes[indexOuId] : commandes.find(c => c.id === indexOuId);
     if (!cmd) return;
-
-    const res = await fetch(`/api/commandes/${cmd.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ statut: nouveauStatut })
-    });
-
+    const res = await fetch(`/api/commandes/${cmd.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ statut: nouveauStatut }) });
     if (res.ok) {
         cmd.statut = nouveauStatut;
         if (nouveauStatut !== 'recu') {
@@ -426,44 +333,23 @@ async function changerStatut(indexOuId, nouveauStatut) {
 
 async function chargerDonneesServeur() {
     try {
-        const resCmd = await fetch('/api/commandes');
-        if (resCmd.ok) commandes = await resCmd.json();
-
-        const resUsr = await fetch('/api/utilisateurs');
-        if (resUsr.ok) utilisateurs = await resUsr.json();
-    } catch (err) {
-        console.error("Erreur serveur", err);
-    }
+        const resCmd = await fetch('/api/commandes'); if (resCmd.ok) commandes = await resCmd.json();
+        const resUsr = await fetch('/api/utilisateurs'); if (resUsr.ok) utilisateurs = await resUsr.json();
+    } catch (err) { console.error("Erreur serveur", err); }
 }
 
 function setupMobileMenu() {
-    const header = document.querySelector('.header-fin');
-    const nav = document.querySelector('.header-fin nav');
-    
+    const header = document.querySelector('.header-fin'); const nav = document.querySelector('.header-fin nav');
     if (header && nav && !document.querySelector('.hamburger')) {
-        const burgerBtn = document.createElement('button');
-        burgerBtn.className = 'hamburger';
-        burgerBtn.innerHTML = '☰';
-        
+        const burgerBtn = document.createElement('button'); burgerBtn.className = 'hamburger'; burgerBtn.innerHTML = '☰';
         header.insertBefore(burgerBtn, nav);
-        
-        burgerBtn.addEventListener('click', () => {
-            nav.classList.toggle('mobile-open');
-            burgerBtn.innerHTML = nav.classList.contains('mobile-open') ? '✕' : '☰';
-        });
+        burgerBtn.addEventListener('click', () => { nav.classList.toggle('mobile-open'); burgerBtn.innerHTML = nav.classList.contains('mobile-open') ? '✕' : '☰'; });
     }
 }
 
-// ==========================================
-// LANCEMENT GLOBAL 
-// ==========================================
 document.addEventListener('DOMContentLoaded', async () => {
-    
     await chargerDonneesServeur();
-
-    mettreAJourCompteur();
-    setupMobileMenu(); 
-    
+    mettreAJourCompteur(); setupMobileMenu(); 
     if (document.getElementById('contenu-panier')) afficherPanier();
 
     if (utilisateurConnecte && document.getElementById('form-commande')) {
@@ -479,32 +365,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     let minDateStr = "";
     
     if (dateInput) {
-        const minDate = new Date();
-        minDate.setDate(minDate.getDate() + 5); 
-        const annee = minDate.getFullYear();
-        const mois = String(minDate.getMonth() + 1).padStart(2, '0');
-        const jour = String(minDate.getDate()).padStart(2, '0');
-        minDateStr = `${annee}-${mois}-${jour}`;
-        
+        const minDate = new Date(); minDate.setDate(minDate.getDate() + 5); 
+        minDateStr = `${minDate.getFullYear()}-${String(minDate.getMonth() + 1).padStart(2, '0')}-${String(minDate.getDate()).padStart(2, '0')}`;
         dateInput.setAttribute('min', minDateStr);
 
         dateInput.addEventListener('change', (e) => {
             let valeurDate = e.target.value;
-            if (valeurDate < minDateStr) {
-                alert("⚠️ L'Atelier a besoin d'au minimum 5 jours pour préparer vos douceurs !");
-                e.target.value = ''; return;
-            }
+            if (valeurDate < minDateStr) { alert("⚠️ 5 jours minimum pour la préparation !"); e.target.value = ''; return; }
 
             let jourChoisi = new Date(valeurDate).getDay();
             let modeActuel = document.querySelector('input[name="recuperation"]:checked').value;
 
-            // Blocage des jours hors marché pour le Stand
             if (modeActuel === 'stand' && ![0, 3, 5].includes(jourChoisi)) {
                 alert("❌ Le marché de Gardanne n'a lieu que les Mercredis, Vendredis et Dimanches.");
                 e.target.value = ''; return;
             }
 
-            // Affichage de l'heure selon le mode
             if (modeActuel === 'stand') {
                 if(blocHeure) blocHeure.style.display = 'none';
                 if(msgStand) msgStand.style.display = 'block';
@@ -521,65 +397,64 @@ document.addEventListener('DOMContentLoaded', async () => {
     const radioStand = document.getElementById('choix-marche');
     const radioMaison = document.getElementById('choix-maison');
     const blocLivraison = document.getElementById('bloc-livraison');
-    const msgMaison = document.getElementById('msg-maison');
+    const blocMaison = document.getElementById('bloc-maison');
     const mapDiv = document.getElementById('map');
     const totalCommande = calculerTotal();
 
     if (inputAdresse) {
-        let timer;
-        inputAdresse.addEventListener('input', () => {
-            clearTimeout(timer);
-            timer = setTimeout(() => rechercherAdresse(inputAdresse.value), 1000);
-        });
+        let timer; inputAdresse.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(() => rechercherAdresse(inputAdresse.value), 1000); });
     }
 
-    if (radioLivraison && radioStand && radioMaison && blocLivraison) {
-        if (totalCommande < 50) {
-            radioLivraison.disabled = true;
-            radioStand.checked = true;
+    if (radioLivraison && radioStand && radioMaison) {
+        if (totalCommande < 50 && radioLivraison) {
+            radioLivraison.disabled = true; radioStand.checked = true;
             const labelLivraison = radioLivraison.closest('label');
-            if (labelLivraison) {
-                labelLivraison.style.opacity = "0.5";
-                if (!document.getElementById('msg-seuil')) {
-                    const messageSeuil = document.createElement('span');
-                    messageSeuil.id = 'msg-seuil';
-                    messageSeuil.innerHTML = "<br><small style='color: #e74c3c; font-weight: bold; margin-left: 25px;'>⚠️ Minimum 50€ requis.</small>";
-                    labelLivraison.appendChild(messageSeuil);
-                }
-            }
+            if (labelLivraison) labelLivraison.innerHTML += "<br><small style='color: #e74c3c; font-weight: bold; margin-left: 25px;'>⚠️ Minimum 50€ requis.</small>";
         }
 
-        const resetDate = () => {
-            if (dateInput) { dateInput.value = ''; }
-            if (blocHeure) { blocHeure.style.display = 'none'; }
-            if (msgStand) { msgStand.style.display = 'none'; }
-        };
+        const resetDate = () => { if (dateInput) dateInput.value = ''; if (blocHeure) blocHeure.style.display = 'none'; if (msgStand) msgStand.style.display = 'none'; };
 
         radioLivraison.addEventListener('change', () => { 
-            blocLivraison.style.display = 'block'; 
-            if(msgMaison) msgMaison.style.display = 'none';
-            if(mapDiv) { 
-                mapDiv.style.display = 'block'; 
-                initFreeMap(); 
-                setTimeout(() => { if(map) map.invalidateSize(); }, 200); 
-            }
+            if(blocLivraison) blocLivraison.style.display = 'block'; 
+            if(blocMaison) blocMaison.style.display = 'none';
+            if(mapDiv) { mapDiv.style.display = 'block'; initFreeMap(); setTimeout(() => { if(map) map.invalidateSize(); }, 200); }
             resetDate();
         });
         
         radioStand.addEventListener('change', () => { 
-            blocLivraison.style.display = 'none'; 
-            if(msgMaison) msgMaison.style.display = 'none';
+            if(blocLivraison) blocLivraison.style.display = 'none'; 
+            if(blocMaison) blocMaison.style.display = 'none';
             if(mapDiv) mapDiv.style.display = 'none';
             resetDate();
         });
 
         radioMaison.addEventListener('change', () => { 
-            blocLivraison.style.display = 'none'; 
-            if(msgMaison) msgMaison.style.display = 'block';
+            if(blocLivraison) blocLivraison.style.display = 'none'; 
+            if(blocMaison) blocMaison.style.display = 'block';
             if(mapDiv) mapDiv.style.display = 'none';
+            
+            // CREATION DE LA CARTE DE LA MAISON
+            if(!mapNora) {
+                mapNora = L.map('map-nora').setView(coordNora, 16);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OSM' }).addTo(mapNora);
+                L.marker(coordNora).addTo(mapNora).bindPopup("🏠 L'atelier de NORA").openPopup();
+                
+                fetch(`https://nominatim.openstreetmap.org/reverse?lat=${coordNora[0]}&lon=${coordNora[1]}&format=json`)
+                .then(res => res.json())
+                .then(data => {
+                    if(data && data.address) {
+                        const route = data.address.road || data.address.pedestrian || "Chemin";
+                        const city = data.address.city || data.address.town || data.address.village || "Gardanne";
+                        const postcode = data.address.postcode || "13120";
+                        document.getElementById('adresse-nora-texte').innerHTML = `${route}, ${postcode} ${city}`;
+                    } else {
+                        document.getElementById('adresse-nora-texte').innerHTML = `Gardanne (13120)`;
+                    }
+                }).catch(() => document.getElementById('adresse-nora-texte').innerHTML = `Gardanne (13120)`);
+            } else {
+                setTimeout(() => mapNora.invalidateSize(), 200);
+            }
             resetDate();
         });
     }
-    
-    if (typeof chargerToutesLesCommandes === 'function') chargerToutesLesCommandes();
 });
