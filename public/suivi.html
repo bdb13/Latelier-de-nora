@@ -53,17 +53,22 @@
         );
 
         if (trouvees.length === 0) {
-            conteneur.innerHTML = `<p style="color:red; text-align:center; margin-top:20px;">❌ Aucune commande trouvée. Vérifiez l'identifiant.</p>`;
+            conteneur.innerHTML = `<p style="color:red; text-align:center; margin-top:20px; font-weight:bold;">❌ Aucune commande trouvée. Vérifiez l'identifiant.</p>`;
         } else {
             let html = '<div style="margin-top: 30px;">';
             trouvees.forEach(cmd => {
                 let badge = cmd.statut === 'recu' ? 'statut-rouge' : (cmd.statut === 'preparation' ? 'statut-orange' : 'statut-vert');
                 let texte = cmd.statut === 'recu' ? 'Reçue' : (cmd.statut === 'preparation' ? 'En préparation' : 'Prête !');
+                
+                let modeIcon = cmd.methode === 'livraison' ? '🚚 Livraison' : (cmd.methode === 'maison' ? '🏠 Retrait chez Nora' : '🛍️ Retrait au Stand');
+                let heureText = cmd.methode === 'stand' ? 'Matin (8h-12h)' : (cmd.heure || 'Non précisée');
+
                 html += `
                 <div style="background: white; border: 2px solid var(--gold-accent); padding: 20px; border-radius: 12px; margin-bottom: 15px;">
-                    <h3 style="color: var(--gold-accent);">Commande ${cmd.id}</h3>
+                    <h3 style="color: var(--gold-accent); border-bottom: 1px solid #eee; padding-bottom:10px; margin-top:0;">Commande ${cmd.id}</h3>
                     <p><b>Statut :</b> <span class="order-badge ${badge}">${texte}</span></p>
-                    <p>📅 <b>Pour le :</b> ${new Date(cmd.date).toLocaleDateString('fr-FR')}</p>
+                    <p>📅 <b>Prévue le :</b> <span style="color:var(--pine-green); font-weight:bold;">${new Date(cmd.date).toLocaleDateString('fr-FR')} à ${heureText}</span></p>
+                    <p>📦 <b>Mode :</b> ${modeIcon}</p>
                     <p>🛒 <b>Articles :</b> ${cmd.articles.map(a => `${a.quantite}x ${a.nom}`).join(', ')}</p>
                 </div>`;
             });
