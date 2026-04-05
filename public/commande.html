@@ -46,16 +46,15 @@
                 </div>
 
                 <div class="groupe-champ">
-                    <label>Date de récupération (Préparation de 5 jours minimum) :</label>
-                    <input type="date" id="date-retrait" required>
-                </div>
-
-                <div class="groupe-champ">
                     <label>Mode de récupération :</label>
                     <div class="radio-groupe">
                         <label>
-                            <input type="radio" name="recuperation" id="choix-marche" value="retrait" checked>
+                            <input type="radio" name="recuperation" id="choix-marche" value="stand" checked>
                             🛍️ Retrait au stand (Marché de Gardanne)
+                        </label>
+                        <label>
+                            <input type="radio" name="recuperation" id="choix-maison" value="maison">
+                            🏠 Retrait chez Nora (Gardanne)
                         </label>
                         <label>
                             <input type="radio" name="recuperation" id="choix-livraison" value="livraison">
@@ -65,14 +64,29 @@
                 </div>
 
                 <div id="bloc-livraison" style="display:none; background: #fdfcf8; padding: 25px; border-radius: 12px; margin-top: 15px; border: 2px solid var(--gold-accent); width: 100%; box-sizing: border-box;">
-                    
                     <div class="groupe-champ">
                         <label>Adresse complète (Recherche auto)</label>
                         <input type="text" id="adresse" placeholder="📍 Tapez votre adresse et patientez 1 seconde...">
                         <p id="erreur-distance" style="font-weight:bold; display:none; margin-top:10px; font-size: 0.9rem;"></p>
                     </div>
-
                     <div id="map" class="map-container" style="display:none; height: 250px; width: 100%; border-radius: 8px; border: 2px solid #c5a059; margin-bottom: 15px; z-index: 1;"></div>
+                </div>
+
+                <div id="msg-maison" style="display:none; background: #fdfcf8; padding: 15px; border-radius: 12px; margin-top: 15px; border: 2px solid var(--gold-accent); text-align: center; font-weight: bold; color: var(--pine-green);">
+                    📍 Point de retrait : Coordonnées GPS (43.454482, 5.487940). Les détails vous seront confirmés par e-mail.
+                </div>
+
+                <div class="groupe-champ" style="margin-top: 25px;">
+                    <label>Date de récupération (Préparation de 5 jours minimum) :</label>
+                    <input type="date" id="date-retrait" required>
+                    <p id="msg-stand" style="display:block; color:var(--pine-green); font-size:0.95rem; margin-top:8px; font-weight:bold; text-align: center; background: #f5f3eb; padding: 10px; border-radius: 8px;">🕒 Le retrait au stand se fait librement de 8h à 12h.</p>
+                </div>
+
+                <div class="groupe-champ" id="bloc-heure" style="display:none;">
+                    <label>Heure de récupération :</label>
+                    <select id="heure-retrait" style="width: 100%; padding: 14px; border: 2px solid #ddd; border-radius: 6px; font-family: inherit; font-size: 1rem; color: var(--pine-green);">
+                        <option value="">Sélectionnez d'abord une date</option>
+                    </select>
                 </div>
 
                 <div class="groupe-champ">
