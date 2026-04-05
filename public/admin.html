@@ -22,7 +22,7 @@
 
         @media (max-width: 768px) {
             .calendar-grid { display: flex; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 10px; }
-            .calendar-day { flex: 0 0 135px; }
+            .calendar-day { flex: 0 0 120px; }
             .calendar-day.empty { display: none; }
         }
     </style>
@@ -117,10 +117,9 @@
                 let cmdsDuJour = commandes.filter(c => c.date === dateStr);
                 let nomJour = new Date(annee, mois, jour).toLocaleDateString('fr-FR', {weekday: 'short', day: 'numeric'});
                 
-                // Intégration de l'heure dans la pastille du calendrier
                 let pastillesHTML = cmdsDuJour.map(cmd => {
-                    let affichageHeure = cmd.methode === 'stand' ? 'Matin' : (cmd.heure || '?');
-                    return `<div class="pastille-cmd" onclick="scrollToCommande('${cmd.id}')">📦 ${cmd.nom.split(' ')[0]} - ${affichageHeure}</div>`
+                    let heureLabel = cmd.methode === 'stand' ? 'Matin' : (cmd.heure || '?');
+                    return `<div class="pastille-cmd" onclick="scrollToCommande('${cmd.id}')">📦 ${cmd.nom.split(' ')[0]} - ${heureLabel}</div>`;
                 }).join('') || '-';
                 
                 calHTML += `<div class="calendar-day ${cmdsDuJour.length > 0 ? 'has-order' : ''}"><div class="date-jour">${nomJour}</div><div>${pastillesHTML}</div></div>`;
@@ -149,14 +148,20 @@
                 let modeIcon = cmd.methode === 'livraison' ? '🚚 Livraison' : (cmd.methode === 'maison' ? '🏠 Chez Nora' : '🛍️ Stand');
                 let heureText = cmd.methode === 'stand' ? 'Libre (8h-12h)' : (cmd.heure || 'Non précisée');
                 
+                let notesHtml = (cmd.notes && cmd.notes !== "Aucune précision" && cmd.notes !== "Aucune" && cmd.notes !== "") 
+                    ? `<div style="background: #fff3cd; padding: 12px; border-left: 4px solid #ffc107; margin: 15px 0; font-style: italic; border-radius: 4px; color: #856404;">💬 <b>Un petit mot pour Nora :</b> "${cmd.notes}"</div>` : '';
+
                 return `
                 <div class="order-card" id="cmd-${cmd.id}">
                     <div class="order-info">
                         <h4>Commande ${cmd.id} <span class="order-badge ${badge}">${cmd.statut.toUpperCase()}</span></h4>
-                        <p>👤 <b>${cmd.nom}</b> (${cmd.tel})</p>
+                        <p>👤 <b>${cmd.nom}</b></p>
+                        <p>📞 <a href="tel:${cmd.tel}" style="color:var(--pine-green); text-decoration:none; font-weight:bold;">${cmd.tel}</a></p>
+                        <p>✉️ <a href="mailto:${cmd.emailClient}" style="color:var(--gold-accent); text-decoration:none;">${cmd.emailClient}</a></p>
                         <p>📅 <b>Prévue le :</b> <span style="color:var(--pine-green); font-size:1.1rem; font-weight:bold;">${new Date(cmd.date).toLocaleDateString('fr-FR')} à ${heureText}</span></p>
-                        <p>📦 <b>Mode :</b> ${modeIcon}</p>
+                        <p>📦 <b>Mode :</b> ${modeIcon} ${cmd.methode === 'livraison' ? `<br>📍 <i>${cmd.adresse}</i>` : ''}</p>
                         <p>🛒 <b>Articles :</b> ${cmd.articles.map(a => `${a.quantite}x ${a.nom}`).join(', ')}</p>
+                        ${notesHtml}
                         <p style="color: var(--gold-accent); font-weight: bold; font-size: 1.2rem;">Total : ${(cmd.total || 0).toFixed(2)} €</p>
                     </div>
                     <div style="width: 200px;">
