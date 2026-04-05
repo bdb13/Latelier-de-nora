@@ -143,6 +143,9 @@ footer { background-color: var(--pine-green); color: white; text-align: center; 
 .btn-terminer { background: #555; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; width: 100%;}
 .btn-terminer:hover { background: #333; }
 
+/* CLASSE POUR LES BOUTONS ADMIN */
+.order-actions { width: 220px; }
+
 /* --- ESPACE MEMBRE & MENU --- */
 .menu-profil { position: relative; display: inline-block; margin: 0 15px; }
 .bouton-profil { background: transparent; border: 2px solid var(--gold-accent); color: white; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; font-family: inherit; font-size: 1rem; transition: 0.3s; }
@@ -237,9 +240,37 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { background-color: 
     .panier-container, .formulaire-commande, .connexion-container, .details { margin: 15px auto !important; padding: 20px !important; width: 100% !important; box-sizing: border-box; border-top: 3px solid var(--gold-accent); }
     .details h2 { font-size: 1.8rem; }
     .prix-gros { font-size: 1.5rem; }
-    .admin-stats { flex-direction: column; gap: 15px; }
     .action-produit { flex-direction: column; width: 100%; gap: 15px; }
     .selecteur-qte { width: 100%; justify-content: center; }
     .btn-qte { padding: 12px 25px; }
     .action-produit .bouton { width: 100%; text-align: center; box-sizing: border-box; }
+
+    /* --- ADAPTATION DU TABLEAU DE BORD ADMIN SUR MOBILE --- */
+    .admin-dashboard { margin: 15px auto !important; padding: 0 15px !important; }
+    .admin-section { padding: 20px !important; margin-bottom: 20px !important; }
+    
+    /* Réorganiser l'en-tête du calendrier */
+    .admin-section > div:first-child { 
+        flex-direction: column !important; 
+        text-align: center; 
+        gap: 15px; 
+    }
+    
+    /* Réorganiser les commandes pour qu'elles s'empilent proprement */
+    .order-card { 
+        flex-direction: column !important; 
+        align-items: stretch !important; 
+        padding: 15px !important; 
+    }
+    .order-info { margin-bottom: 15px; }
+    
+    /* Le bloc d'actions s'élargit à 100% sur tel */
+    .order-actions { 
+        width: 100% !important; 
+        text-align: center;
+    }
+    
+    /* Ajuster les boutons du calendrier pour qu'ils rentrent */
+    .btn-nav-cal { padding: 8px 12px; font-size: 0.85rem; }
+    #titre-mois { font-size: 1rem !important; min-width: auto !important; margin: 0 10px !important; display: inline-block;}
 }
