@@ -23,8 +23,8 @@
         @keyframes flashHighlight { 0% { box-shadow: 0 0 20px var(--gold-accent); } 100% { box-shadow: none; } }
 
         @media (max-width: 768px) {
-            .calendar-grid { display: flex; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 10px; }
-            .calendar-day { flex: 0 0 120px; }
+            .calendar-grid { display: flex; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 15px; width: 100%; box-sizing: border-box; scroll-snap-type: x mandatory; }
+            .calendar-day { flex: 0 0 130px; scroll-snap-align: start; min-height: 100px; border: 2px solid #eaeaea; }
             .calendar-day.empty { display: none; }
         }
     </style>
@@ -48,9 +48,9 @@
         <div class="admin-section">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; flex-wrap: wrap; gap: 15px;">
                 <h2 style="border: none; padding: 0; margin: 0;">📅 Calendrier des Commandes</h2>
-                <div>
+                <div style="display: flex; align-items: center; gap: 10px;">
                     <button class="btn-nav-cal" onclick="changerMois(-1)">◀ Mois Préc.</button>
-                    <span id="titre-mois" style="font-weight: bold; font-size: 1.2rem; color: var(--pine-green); margin: 0 15px; display: inline-block; min-width: 130px; text-align: center; text-transform: capitalize;"></span>
+                    <span id="titre-mois" style="font-weight: bold; font-size: 1.1rem; color: var(--pine-green); text-transform: capitalize;"></span>
                     <button class="btn-nav-cal" onclick="changerMois(1)">Mois Suiv. ▶</button>
                 </div>
             </div>
@@ -173,6 +173,9 @@
                             <option value="preparation" ${cmd.statut === 'preparation' ? 'selected' : ''}>🟠 Préparation</option>
                             <option value="prete" ${cmd.statut === 'prete' ? 'selected' : ''}>🟢 Prête</option>
                         </select>
+                        
+                        <button onclick="envoyerWhatsApp('${cmd.id}')" style="background:#27ae60; color:white; border:none; padding:10px; border-radius:5px; width:100%; margin-top:5px; cursor:pointer; font-weight:bold;">📱 WhatsApp</button>
+
                         <button onclick="supprimerCommandeAdmin('${cmd.id}')" class="btn-terminer" style="background:#e74c3c; margin-top:5px;">Effacer</button>
                     </div>
                 </div>`;
