@@ -24,9 +24,49 @@ nav a:hover, nav a.actif { color: var(--gold-accent); }
 .bouton { display: inline-block; background-color: var(--gold-accent); color: white; text-decoration: none; padding: 12px 28px; border-radius: 30px; font-weight: bold; border: none; cursor: pointer; transition: all 0.3s ease; font-size: 1.1rem; }
 .bouton:hover { background-color: #a88544; transform: scale(1.03); }
 
-.accueil-hero { text-align: center; height: 85vh; width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 0 20px; box-sizing: border-box; background-color: var(--pine-green); background-image: linear-gradient(rgba(74, 93, 78, 0.7), rgba(74, 93, 78, 0.8)), url('./images/bah.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; }
+/* --- NOUVEAU DESIGN DE L'ACCUEIL --- */
+.accueil-hero { 
+    text-align: center; 
+    height: 85vh; 
+    width: 100%; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+    padding: 0 20px; 
+    box-sizing: border-box; 
+    background-color: var(--pine-green); 
+    /* Le filtre sombre sur ta nouvelle image */
+    background-image: linear-gradient(rgba(44, 62, 48, 0.65), rgba(44, 62, 48, 0.8)), url('./images/IMG_20260405_092125~2.jpg'); 
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat; 
+}
+.titre-principal-hero {
+    font-family: 'Playfair Display', serif; 
+    font-size: 3.5rem; /* Plus grand sur PC */
+    color: var(--gold-accent); 
+    text-transform: uppercase; 
+    letter-spacing: 3px; 
+    margin: 0 0 15px 0; 
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+}
+.sous-titre-hero { 
+    font-family: 'Playfair Display', serif; 
+    font-size: 1.8rem; 
+    color: white; 
+    text-transform: uppercase; 
+    letter-spacing: 2px; 
+    margin: 0 0 40px 0; 
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.5); 
+}
+.bouton-hero {
+    font-size: 1.3rem; /* Bouton un peu plus gros sur PC */
+    padding: 16px 35px;
+}
+/* ---------------------------------- */
+
 .catalogue-bg { background-image: linear-gradient(rgba(253, 252, 248, 0.94), rgba(253, 252, 248, 0.94)), url('./images/stand.jpg'); background-size: cover; background-position: center; background-attachment: fixed; }
-.sous-titre-hero { font-family: 'Playfair Display', serif; font-size: 2.2rem; color: var(--gold-accent); text-transform: uppercase; letter-spacing: 2px; line-height: 1.5; margin: 0; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
 
 .grille-produits { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; padding: 60px 20px; max-width: 1200px; margin: 0 auto; }
 .carte { position: relative; width: 320px; height: 320px; border-radius: 8px; overflow: hidden; display: block; text-decoration: none; box-shadow: 0 8px 20px rgba(0,0,0,0.1); border: 2px solid var(--gold-accent); }
@@ -163,92 +203,41 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { background-color: 
 .hamburger { display: none; background: none; border: none; font-size: 2.5rem; color: var(--gold-accent); cursor: pointer; padding: 0; margin: 0; }
 
 @media (max-width: 768px) {
-    .header-fin {
-        position: sticky;
-        top: 0;
-        z-index: 9999;
-        flex-direction: row; 
-        justify-content: space-between;
-        align-items: center;
-        padding: 15px 20px;
-    }
-
+    .header-fin { position: sticky; top: 0; z-index: 9999; flex-direction: row; justify-content: space-between; align-items: center; padding: 15px 20px; }
     .logo-titre { flex-direction: row; align-items: baseline; gap: 8px; }
     .logo-titre .script { font-size: 1.8rem; margin: 0; }
     .logo-titre .serif { font-size: 1.2rem; margin: 0; }
-
     .hamburger { display: block; }
-
-    .header-fin nav {
-        display: none !important; 
-        flex-direction: column;
-        width: 100%;
-        background-color: var(--pine-green);
-        position: absolute;
-        top: 100%;
-        left: 0;
-        z-index: 1000;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-        border-top: 2px solid var(--gold-accent);
-    }
-
-    .header-fin nav.mobile-open {
-        display: flex !important;
-        animation: glissement 0.3s ease;
-    }
-
+    .header-fin nav { display: none !important; flex-direction: column; width: 100%; background-color: var(--pine-green); position: absolute; top: 100%; left: 0; z-index: 1000; box-shadow: 0 10px 20px rgba(0,0,0,0.3); border-top: 2px solid var(--gold-accent); }
+    .header-fin nav.mobile-open { display: flex !important; animation: glissement 0.3s ease; }
     @keyframes glissement { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-
     .header-fin nav a { padding: 15px; margin: 0; border-bottom: 1px solid rgba(255,255,255,0.1); text-align: center; width: 100%; box-sizing: border-box; }
-
     .menu-profil { width: 100%; margin: 0; text-align: center; }
     .bouton-profil { width: 100%; border: none; border-radius: 0; padding: 15px; background: transparent; font-size: 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
     .dropdown-content { position: static; display: none !important; flex-direction: column; background-color: rgba(0,0,0,0.15); box-shadow: none; border: none; width: 100%; }
     .dropdown-content.show-sous-menu { display: flex !important; }
     .dropdown-content a { padding: 12px; font-size: 0.95rem; color: #e0e0e0; }
 
+    /* --- ADAPTATION DES TAILLES DU TEXTE DE L'ACCUEIL SUR MOBILE --- */
     .accueil-hero { height: auto; min-height: 75vh; padding: 40px 20px; }
-    .sous-titre-hero { font-size: 1.6rem; line-height: 1.4; margin-bottom: 25px; }
-    .accueil-hero .bouton { font-size: 1.2rem; padding: 15px 30px; width: 90%; max-width: 300px; }
+    .titre-principal-hero { font-size: 2rem; margin-bottom: 10px;}
+    .sous-titre-hero { font-size: 1.2rem; margin-bottom: 25px; }
+    .bouton-hero { font-size: 1.2rem; padding: 15px 30px; width: 90%; max-width: 300px; }
+    /* --------------------------------------------------------------- */
 
     main { padding: 15px !important; }
     .carte { width: 100%; max-width: 350px; }
-    
     .panier-container, .formulaire-commande, .connexion-container, .details { margin: 15px auto !important; padding: 20px !important; width: 100% !important; box-sizing: border-box; border-top: 3px solid var(--gold-accent); }
     .details h2 { font-size: 1.8rem; }
     .prix-gros { font-size: 1.5rem; }
     .admin-stats { flex-direction: column; gap: 15px; }
-
     .action-produit { flex-direction: column; width: 100%; gap: 15px; }
     .selecteur-qte { width: 100%; justify-content: center; }
     .btn-qte { padding: 12px 25px; }
     .action-produit .bouton { width: 100%; text-align: center; box-sizing: border-box; }
 }
 
-/* =========================================
-   STYLE DU NOUVEAU BOUTON OEIL POUR MOT DE PASSE
-   ========================================= */
-.champ-mdp-container {
-    position: relative;
-    display: flex;
-    align-items: center;
-    width: 100%;
-}
-.champ-mdp-container input {
-    padding-right: 45px !important; /* Laisse de la place pour l'œil */
-    width: 100%;
-}
-.btn-oeil {
-    position: absolute;
-    right: 10px;
-    background: none;
-    border: none;
-    font-size: 1.3rem;
-    cursor: pointer;
-    color: var(--pine-green);
-    outline: none;
-}
-.input-erreur {
-    border-color: #e74c3c !important;
-    box-shadow: 0 0 7px rgba(231, 76, 60, 0.4) !important;
-}
+.champ-mdp-container { position: relative; display: flex; align-items: center; width: 100%; }
+.champ-mdp-container input { padding-right: 45px !important; width: 100%; }
+.btn-oeil { position: absolute; right: 10px; background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--pine-green); outline: none; }
+.input-erreur { border-color: #e74c3c !important; box-shadow: 0 0 7px rgba(231, 76, 60, 0.4) !important; }
