@@ -32,8 +32,12 @@
                     <div class="groupe-champ">
                         <input type="email" id="email-connexion" placeholder="Votre adresse Email" required style="text-align: center;">
                     </div>
+                    
                     <div class="groupe-champ" style="margin-bottom: 10px;">
-                        <input type="password" id="mdp-connexion" placeholder="Votre mot de passe" required style="text-align: center;">
+                        <div class="champ-mdp-container">
+                            <input type="password" id="mdp-connexion" placeholder="Votre mot de passe" required style="text-align: center;">
+                            <button type="button" class="btn-oeil" onclick="toggleVisibiliteMdp('mdp-connexion', this)">👁️</button>
+                        </div>
                     </div>
                     
                     <div style="text-align: right; margin-bottom: 20px;">
@@ -64,10 +68,23 @@
                     <div class="groupe-champ">
                         <input type="email" id="email-inscr" placeholder="Adresse Email" required style="text-align: center;">
                     </div>
+                    
                     <div class="groupe-champ">
-                        <input type="password" id="mdp-inscr" placeholder="Créer un mot de passe" required style="text-align: center;">
+                        <div class="champ-mdp-container">
+                            <input type="password" id="mdp-inscr" placeholder="Créer un mot de passe" required style="text-align: center;">
+                            <button type="button" class="btn-oeil" onclick="toggleVisibiliteMdp('mdp-inscr', this)">👁️</button>
+                        </div>
                     </div>
-                    <button type="submit" class="bouton" style="width: 100%; font-size: 1.1rem; padding: 12px;">S'inscrire</button>
+
+                    <div class="groupe-champ" style="margin-bottom: 10px;">
+                        <div class="champ-mdp-container">
+                            <input type="password" id="mdp-inscr-conf" placeholder="Confirmer le mot de passe" required style="text-align: center;">
+                            <button type="button" class="btn-oeil" onclick="toggleVisibiliteMdp('mdp-inscr-conf', this)">👁️</button>
+                        </div>
+                        <p id="erreur-mdp" style="color: #e74c3c; font-size: 0.9rem; font-weight: bold; margin-top: 8px; display: none;">❌ Mots de passe incorrects</p>
+                    </div>
+
+                    <button type="submit" class="bouton" style="width: 100%; margin-top: 15px; font-size: 1.1rem; padding: 12px;">S'inscrire</button>
                 </form>
 
                 <p style="margin-top: 25px; color: #555;">Déjà client ? <a href="#" onclick="switchForm(true)" style="color: var(--pine-green); font-weight: bold; text-decoration: none;">Se connecter</a></p>
