@@ -23,7 +23,6 @@ function verifierAccesPages() {
 }
 verifierAccesPages();
 
-// NOUVEAU : Fonction pour ouvrir/fermer le sous-menu "Mon Compte" sur mobile
 function toggleSousMenu(e) {
     e.preventDefault();
     const dropdown = e.target.nextElementSibling;
@@ -40,7 +39,6 @@ function mettreAJourInterfaceAuth() {
         let menuAdmin = utilisateurConnecte.email === "latelierdenora.stg@gmail.com" 
             ? `<a href="admin.html" style="color: red; font-weight: bold;">⚙️ Espace Admin</a>` : '';
         
-        // J'ai ajouté onclick="toggleSousMenu(event)" sur le bouton profil
         blocMenu.innerHTML = `
             <div class="menu-profil">
                 <button class="bouton-profil" onclick="toggleSousMenu(event)">👤 ${prenom} ▼</button>
@@ -78,7 +76,7 @@ function motDePasseOublie() {
     emailSaisi = emailSaisi.trim();
 
     if (emailSaisi === "latelierdenora.stg@gmail.com") {
-        alert("⚠️ Le mot de passe administrateur est bloqué par sécurité. \n(Indice si vous l'avez oublié : latelierdenora)");
+        alert("⚠️ Le mot de passe administrateur est bloqué par sécurité.");
         return;
     }
 
@@ -159,7 +157,7 @@ function switchForm(versConnexion) {
 }
 
 // --- FONCTIONS EMAILS ---
-function envoyerMailCommande(commande) {
+async function envoyerMailCommande(commande) {
     if (typeof emailjs === 'undefined') return;
     const templateParams = {
         to_name: commande.nom, to_email: commande.emailClient, admin_email: "latelierdenora.stg@gmail.com",
@@ -168,14 +166,20 @@ function envoyerMailCommande(commande) {
         articles: commande.articles.map(a => `${a.quantite}x ${a.nom}`).join(', '),
         notes: commande.notes
     };
-    emailjs.send(EMAILJS_SERVICE_ID, TEMPLATE_NOUVELLE_COMMANDE, templateParams);
+    await emailjs.send(EMAILJS_SERVICE_ID, TEMPLATE_NOUVELLE_COMMANDE, templateParams);
     templateParams.to_email = "latelierdenora.stg@gmail.com"; templateParams.to_name = "Nora";
-    emailjs.send(EMAILJS_SERVICE_ID, TEMPLATE_NOUVELLE_COMMANDE, templateParams);
+    await emailjs.send(EMAILJS_SERVICE_ID, TEMPLATE_NOUVELLE_COMMANDE, templateParams);
 }
-function envoyerMailStatut(commande) {
+
+async function envoyerMailStatut(commande) {
     if (typeof emailjs === 'undefined') return;
     let texteStatut = commande.statut === 'preparation' ? "est maintenant en préparation" : "est prête !";
-    emailjs.send(EMAILJS_SERVICE_ID, TEMPLATE_CHANGEMENT_STATUT, { to_name: commande.nom, to_email: commande.emailClient, order_id: commande.id, statut_label: texteStatut });
+    return emailjs.send(EMAILJS_SERVICE_ID, TEMPLATE_CHANGEMENT_STATUT, { 
+        to_name: commande.nom, 
+        to_email: commande.emailClient, 
+        order_id: commande.id, 
+        statut_label: texteStatut 
+    });
 }
 
 // --- GESTION PANIER ---
@@ -293,7 +297,7 @@ async function rechercherAdresse(query) {
 
 const formCmd = document.getElementById('form-commande');
 if (formCmd) {
-    formCmd.addEventListener('submit', (e) => {
+    formCmd.addEventListener('submit', async (e) => {
         e.preventDefault();
         if (!utilisateurConnecte) return alert("❌ Vous devez être connecté pour commander.");
         if (panier.length === 0) return alert("Votre panier est vide.");
@@ -325,36 +329,41 @@ if (formCmd) {
             date: dateChoisie, notes: notesSaisies, articles: [...panier], statut: 'recu' 
         };
         
-        fetch('/api/commandes', {
+        const res = await fetch('/api/commandes', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(nouvelleCommande)
-        }).then(response => {
-            if (response.ok) {
-                localStorage.removeItem('panierNora');
-                envoyerMailCommande(nouvelleCommande);
-                alert(`✅ Commande confirmée ! Numéro : ${numCommande}. Un mail a été envoyé.`);
-                window.location.href = "suivi.html";
-            }
         });
+
+        if (res.ok) {
+            localStorage.removeItem('panierNora');
+            alert("⏳ Envoi du mail de confirmation...");
+            await envoyerMailCommande(nouvelleCommande);
+            alert(`✅ Commande confirmée ! Numéro : ${numCommande}. Un mail a été envoyé.`);
+            window.location.href = "suivi.html";
+        }
     });
 }
 
-function changerStatut(indexOuId, nouveauStatut) {
+async function changerStatut(indexOuId, nouveauStatut) {
     let cmd = typeof indexOuId === "number" ? commandes[indexOuId] : commandes.find(c => c.id === indexOuId);
     if (!cmd) return;
 
-    fetch(`/api/commandes/${cmd.id}`, {
+    const res = await fetch(`/api/commandes/${cmd.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ statut: nouveauStatut })
-    }).then(response => {
-        if (response.ok) {
-            cmd.statut = nouveauStatut;
-            if (nouveauStatut !== 'recu') { envoyerMailStatut(cmd); alert("📧 Client informé !"); }
-            location.reload();
-        }
     });
+
+    if (res.ok) {
+        cmd.statut = nouveauStatut;
+        if (nouveauStatut !== 'recu') {
+            alert("⏳ Envoi du mail au client... merci de patienter.");
+            await envoyerMailStatut(cmd); 
+            alert("📧 Client informé avec succès !");
+        }
+        location.reload();
+    }
 }
 
 async function chargerDonneesServeur() {
