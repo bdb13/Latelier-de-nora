@@ -159,10 +159,15 @@ function switchForm(versConnexion) {
 // --- FONCTIONS EMAILS ---
 async function envoyerMailCommande(commande) {
     if (typeof emailjs === 'undefined') return;
+    
+    // NOUVEAU: Formatage de l'heure pour l'email
+    let texteHeure = commande.methode === 'stand' ? 'Matin (8h - 12h)' : commande.heure;
+    let texteDateEtHeure = `${new Date(commande.date).toLocaleDateString('fr-FR')} à ${texteHeure}`;
+
     const templateParams = {
         to_name: commande.nom, to_email: commande.emailClient, admin_email: "latelierdenora.stg@gmail.com",
         order_id: commande.id, total: commande.total.toFixed(2),
-        date: new Date(commande.date).toLocaleDateString('fr-FR'),
+        date: texteDateEtHeure,
         articles: commande.articles.map(a => `${a.quantite}x ${a.nom}`).join(', '),
         notes: commande.notes
     };
@@ -295,6 +300,42 @@ async function rechercherAdresse(query) {
     } catch (error) { console.error("Erreur:", error); }
 }
 
+// LOGIQUE DE GÉNÉRATION DES HEURES
+function genererHeuresLibres(dateChoisieStr, jourSemaine) {
+    const heureSelect = document.getElementById('heure-retrait');
+    if (!heureSelect) return;
+    
+    heureSelect.innerHTML = '<option value="" disabled selected>Choisissez une heure</option>';
+    
+    // Si c'est un jour de marché (0=Dimanche, 3=Mercredi, 5=Vendredi), on commence à 13h
+    let heureDebut = ([0, 3, 5].includes(jourSemaine)) ? 13 : 9;
+    let heureFin = 19;
+
+    let commandesCeJour = commandes.filter(c => c.date === dateChoisieStr && c.methode !== 'stand');
+
+    for (let h = heureDebut; h <= heureFin; h++) {
+        ['00', '30'].forEach(min => {
+            if (h === 19 && min === '30') return; // Dernière heure à 19h00
+            
+            let formatHeure = `${String(h).padStart(2, '0')}:${min}`;
+            let option = document.createElement('option');
+            option.value = formatHeure;
+
+            // Vérifie si le créneau est déjà pris par un autre client
+            let estPris = commandesCeJour.some(c => c.heure === formatHeure);
+            
+            if (estPris) {
+                option.disabled = true;
+                option.innerText = `❌ ${formatHeure} - Indisponible`;
+                option.style.color = "red";
+            } else {
+                option.innerText = `✅ ${formatHeure}`;
+            }
+            heureSelect.appendChild(option);
+        });
+    }
+}
+
 const formCmd = document.getElementById('form-commande');
 if (formCmd) {
     formCmd.addEventListener('submit', async (e) => {
@@ -312,6 +353,19 @@ if (formCmd) {
         }
 
         const methodeChoisie = document.querySelector('input[name="recuperation"]:checked').value;
+        
+        // VÉRIFICATION DE L'HEURE ET DE L'EXCLUSIVITÉ
+        let heureChoisie = "08:00 - 12:00"; // Par défaut pour le stand
+        if (methodeChoisie !== 'stand') {
+            heureChoisie = document.getElementById('heure-retrait').value;
+            if (!heureChoisie) return alert("⚠️ Veuillez sélectionner une heure de récupération.");
+            
+            let estPris = commandes.some(c => c.date === dateChoisie && c.heure === heureChoisie && c.methode !== 'stand');
+            if (estPris) {
+                return alert("Désolé, ce créneau vient tout juste d'être réservé par un autre client. Veuillez choisir une autre heure.");
+            }
+        }
+
         const adresseSaisie = document.getElementById('adresse')?.value;
 
         if (methodeChoisie === 'livraison' && (!adresseValide || !adresseSaisie)) {
@@ -321,12 +375,16 @@ if (formCmd) {
         const notesSaisies = document.getElementById('notes-commande')?.value || "Aucune précision";
         const numCommande = "NORA-" + Math.floor(10000 + Math.random() * 90000);
         
+        let adresseFinale = "Retrait au Stand";
+        if (methodeChoisie === 'maison') adresseFinale = "Retrait chez Nora (43.454482, 5.487940)";
+        if (methodeChoisie === 'livraison') adresseFinale = adresseSaisie;
+
         const nouvelleCommande = { 
             id: numCommande, nom: document.getElementById('nom').value, 
             emailClient: utilisateurConnecte.email, tel: document.getElementById('telephone').value, 
             total: calculerTotal(), methode: methodeChoisie, 
-            adresse: methodeChoisie === 'livraison' ? adresseSaisie : "Retrait Stand", 
-            date: dateChoisie, notes: notesSaisies, articles: [...panier], statut: 'recu' 
+            adresse: adresseFinale, 
+            date: dateChoisie, heure: heureChoisie, notes: notesSaisies, articles: [...panier], statut: 'recu' 
         };
         
         const res = await fetch('/api/commandes', {
@@ -416,6 +474,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     const dateInput = document.getElementById('date-retrait');
+    const blocHeure = document.getElementById('bloc-heure');
+    const msgStand = document.getElementById('msg-stand');
     let minDateStr = "";
     
     if (dateInput) {
@@ -427,20 +487,41 @@ document.addEventListener('DOMContentLoaded', async () => {
         minDateStr = `${annee}-${mois}-${jour}`;
         
         dateInput.setAttribute('min', minDateStr);
-        dateInput.value = minDateStr; 
 
         dateInput.addEventListener('change', (e) => {
-            if (e.target.value < minDateStr) {
+            let valeurDate = e.target.value;
+            if (valeurDate < minDateStr) {
                 alert("⚠️ L'Atelier a besoin d'au minimum 5 jours pour préparer vos douceurs !");
-                e.target.value = minDateStr; 
+                e.target.value = ''; return;
+            }
+
+            let jourChoisi = new Date(valeurDate).getDay();
+            let modeActuel = document.querySelector('input[name="recuperation"]:checked').value;
+
+            // Blocage des jours hors marché pour le Stand
+            if (modeActuel === 'stand' && ![0, 3, 5].includes(jourChoisi)) {
+                alert("❌ Le marché de Gardanne n'a lieu que les Mercredis, Vendredis et Dimanches.");
+                e.target.value = ''; return;
+            }
+
+            // Affichage de l'heure selon le mode
+            if (modeActuel === 'stand') {
+                if(blocHeure) blocHeure.style.display = 'none';
+                if(msgStand) msgStand.style.display = 'block';
+            } else {
+                if(blocHeure) blocHeure.style.display = 'block';
+                if(msgStand) msgStand.style.display = 'none';
+                genererHeuresLibres(valeurDate, jourChoisi);
             }
         });
     }
 
     const inputAdresse = document.getElementById('adresse');
     const radioLivraison = document.getElementById('choix-livraison');
-    const radioRetrait = document.getElementById('choix-marche');
+    const radioStand = document.getElementById('choix-marche');
+    const radioMaison = document.getElementById('choix-maison');
     const blocLivraison = document.getElementById('bloc-livraison');
+    const msgMaison = document.getElementById('msg-maison');
     const mapDiv = document.getElementById('map');
     const totalCommande = calculerTotal();
 
@@ -452,10 +533,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    if (radioLivraison && radioRetrait && blocLivraison) {
+    if (radioLivraison && radioStand && radioMaison && blocLivraison) {
         if (totalCommande < 50) {
             radioLivraison.disabled = true;
-            radioRetrait.checked = true;
+            radioStand.checked = true;
             const labelLivraison = radioLivraison.closest('label');
             if (labelLivraison) {
                 labelLivraison.style.opacity = "0.5";
@@ -468,18 +549,35 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
 
+        const resetDate = () => {
+            if (dateInput) { dateInput.value = ''; }
+            if (blocHeure) { blocHeure.style.display = 'none'; }
+            if (msgStand) { msgStand.style.display = 'none'; }
+        };
+
         radioLivraison.addEventListener('change', () => { 
             blocLivraison.style.display = 'block'; 
+            if(msgMaison) msgMaison.style.display = 'none';
             if(mapDiv) { 
                 mapDiv.style.display = 'block'; 
                 initFreeMap(); 
                 setTimeout(() => { if(map) map.invalidateSize(); }, 200); 
             }
+            resetDate();
         });
         
-        radioRetrait.addEventListener('change', () => { 
+        radioStand.addEventListener('change', () => { 
             blocLivraison.style.display = 'none'; 
+            if(msgMaison) msgMaison.style.display = 'none';
             if(mapDiv) mapDiv.style.display = 'none';
+            resetDate();
+        });
+
+        radioMaison.addEventListener('change', () => { 
+            blocLivraison.style.display = 'none'; 
+            if(msgMaison) msgMaison.style.display = 'block';
+            if(mapDiv) mapDiv.style.display = 'none';
+            resetDate();
         });
     }
     
