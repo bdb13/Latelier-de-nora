@@ -15,7 +15,7 @@
 
     <link rel="stylesheet" href="style.css?v=2">
 </head>
-<body>
+<body class="catalogue-bg">
 
     <header class="header-fin">
         <a href="index.html" class="logo-titre">
@@ -64,15 +64,15 @@
                     </div>
                 </div>
 
-                <div id="bloc-livraison" style="display:none; background: #fdfcf8; padding: 25px; border-radius: 12px; margin-top: 15px; border: 2px solid var(--gold-accent);">
+                <div id="bloc-livraison" style="display:none; background: #fdfcf8; padding: 25px; border-radius: 12px; margin-top: 15px; border: 2px solid var(--gold-accent); width: 100%; box-sizing: border-box;">
                     
                     <div class="groupe-champ">
                         <label>Adresse complète (Recherche auto)</label>
                         <input type="text" id="adresse" placeholder="📍 Tapez votre adresse et patientez 1 seconde...">
-                        <p id="erreur-distance" style="font-weight:bold; display:none; margin-top:10px;"></p>
+                        <p id="erreur-distance" style="font-weight:bold; display:none; margin-top:10px; font-size: 0.9rem;"></p>
                     </div>
 
-                    <div id="map" class="map-container" style="display:none; height: 350px; border-radius: 8px; border: 2px solid #c5a059; margin-bottom: 15px;"></div>
+                    <div id="map" class="map-container" style="display:none; height: 250px; width: 100%; border-radius: 8px; border: 2px solid #c5a059; margin-bottom: 15px; z-index: 1;"></div>
                 </div>
 
                 <div class="groupe-champ">
@@ -91,6 +91,12 @@
     </main>
 
     <footer>
+        <ul class="contact-info">
+            <li>📞 <a href="tel:+33612829293">06.12.82.92.93</a></li>
+            <li>📸 <a href="https://instagram.com/latelierdenoraa" target="_blank">Instagram : @latelierdenoraa</a></li>
+            <li>✉️ <a href="mailto:latelierdenora.stg@gmail.com">latelierdenora.stg@gmail.com</a></li>
+        </ul>
+        <br>
         <p>© 2026 L'atelier de NORA - Artisanat de Gardanne</p>
     </footer>
 
