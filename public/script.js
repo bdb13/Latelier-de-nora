@@ -394,31 +394,30 @@ document.addEventListener('DOMContentLoaded', async () => {
         minDateStr = `${minDate.getFullYear()}-${String(minDate.getMonth() + 1).padStart(2, '0')}-${String(minDate.getDate()).padStart(2, '0')}`;
         dateInput.setAttribute('min', minDateStr);
 
-        dateInput.addEventListener('change', (e) => {
+        // Remplacement de 'change' par 'input' avec correction silencieuse !
+        dateInput.addEventListener('input', (e) => {
             let valeurDate = e.target.value;
             
-            // CORRECTION BUG CALENDRIER MOBILE: Si la date est vide, on arrête tout (pas d'erreur).
+            // Si le champ est vidé (pendant qu'on tourne la roulette sur iPhone), on ne fait rien
             if (!valeurDate) { 
                 if (blocHeure) blocHeure.style.display = 'none';
                 if (msgStand) msgStand.style.display = 'none';
-                if (heureInput) heureInput.required = false;
+                if (heureInput) heureInput.required = false; 
                 return; 
             }
 
+            // CORRECTION SILENCIEUSE : Pas d'alerte. Si on choisit aujourd'hui, le site bascule direct sur la date min autorisée.
             if (valeurDate < minDateStr) { 
-                alert("⚠️ 5 jours minimum pour la préparation !"); 
-                e.target.value = ''; 
-                if (blocHeure) blocHeure.style.display = 'none';
-                if (msgStand) msgStand.style.display = 'none';
-                if (heureInput) heureInput.required = false;
-                return; 
+                e.target.value = minDateStr; 
+                valeurDate = minDateStr;
             }
 
             let jourChoisi = new Date(valeurDate).getDay();
             let modeActuel = document.querySelector('input[name="recuperation"]:checked').value;
 
+            // On garde l'alerte uniquement si le jour de la semaine est invalide pour le stand
             if (modeActuel === 'stand' && ![0, 3, 5].includes(jourChoisi)) {
-                alert("❌ Le marché de Gardanne n'a lieu que les Mercredis, Vendredis et Dimanches.");
+                alert("❌ Le marché de Gardanne n'a lieu que les Mercredis, Vendredis et Dimanches. Veuillez choisir une de ces dates.");
                 e.target.value = ''; 
                 if (msgStand) msgStand.style.display = 'none';
                 return;
