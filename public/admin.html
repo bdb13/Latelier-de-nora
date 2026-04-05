@@ -7,6 +7,8 @@
     <link rel="icon" type="image/png" href="images/logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=2">
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
     <style>
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 15px; }
@@ -20,29 +22,9 @@
         .highlight-focus { animation: flashHighlight 2s ease-out; }
         @keyframes flashHighlight { 0% { box-shadow: 0 0 20px var(--gold-accent); } 100% { box-shadow: none; } }
 
-        /* --- LE CALENDRIER AGRANDI POUR MOBILE EST ICI --- */
         @media (max-width: 768px) {
-            .calendar-grid { 
-                display: flex; 
-                flex-wrap: nowrap; 
-                overflow-x: auto; 
-                padding-bottom: 15px; 
-                width: 100%; 
-                box-sizing: border-box; 
-            }
-            .calendar-day { 
-                flex: 0 0 160px; /* Beaucoup plus large */
-                min-height: 110px; /* Plus haut */
-            }
-            .date-jour { 
-                font-size: 1.1rem; /* Texte du jour plus lisible */
-                font-weight: bold;
-            }
-            .pastille-cmd { 
-                font-size: 0.95rem; /* Les noms des clients plus gros */
-                padding: 8px; 
-                margin-bottom: 8px; 
-            }
+            .calendar-grid { display: flex; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 10px; }
+            .calendar-day { flex: 0 0 120px; }
             .calendar-day.empty { display: none; }
         }
     </style>
@@ -138,8 +120,8 @@
                 let nomJour = new Date(annee, mois, jour).toLocaleDateString('fr-FR', {weekday: 'short', day: 'numeric'});
                 
                 let pastillesHTML = cmdsDuJour.map(cmd => {
-                    let heureLabel = cmd.methode === 'stand' ? 'Matin' : (cmd.heure || '?');
-                    return `<div class="pastille-cmd" onclick="scrollToCommande('${cmd.id}')">📦 ${cmd.nom.split(' ')[0]} - ${heureLabel}</div>`;
+                    let affichageHeure = cmd.methode === 'stand' ? 'Matin' : (cmd.heure || '?');
+                    return `<div class="pastille-cmd" onclick="scrollToCommande('${cmd.id}')">📦 ${cmd.nom.split(' ')[0]} - ${affichageHeure}</div>`
                 }).join('') || '-';
                 
                 calHTML += `<div class="calendar-day ${cmdsDuJour.length > 0 ? 'has-order' : ''}"><div class="date-jour">${nomJour}</div><div>${pastillesHTML}</div></div>`;
@@ -148,14 +130,14 @@
         }
 
         function supprimerCommandeAdmin(id) {
-            if(confirm("⚠️ Supprimer ?")) {
+            if(confirm("⚠️ Supprimer cette commande ?")) {
                 fetch(`/api/commandes/${id}`, { method: 'DELETE' }).then(() => rafraichirAdmin());
             }
         }
 
         function genererListeCommandes() {
             const ordersContainer = document.getElementById('admin-orders');
-            if(commandes.length === 0) { ordersContainer.innerHTML = "<p>Vide.</p>"; return; }
+            if(commandes.length === 0) { ordersContainer.innerHTML = "<p>Le carnet de commandes est vide.</p>"; return; }
             
             let triees = [...commandes].sort((a,b) => {
                 let dateA = new Date(a.date + 'T' + (a.methode === 'stand' ? '08:00' : (a.heure || '00:00')));
@@ -184,6 +166,7 @@
                         ${notesHtml}
                         <p style="color: var(--gold-accent); font-weight: bold; font-size: 1.2rem;">Total : ${(cmd.total || 0).toFixed(2)} €</p>
                     </div>
+                    
                     <div class="order-actions">
                         <select class="select-statut" onchange="changerStatut('${cmd.id}', this.value)">
                             <option value="recu" ${cmd.statut === 'recu' ? 'selected' : ''}>🔴 Reçue</option>
