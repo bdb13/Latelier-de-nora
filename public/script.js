@@ -360,6 +360,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     const dateInput = document.getElementById('date-retrait');
+    const heureInput = document.getElementById('heure-retrait');
+    const adresseInput = document.getElementById('adresse');
     const blocHeure = document.getElementById('bloc-heure');
     const msgStand = document.getElementById('msg-stand');
     let minDateStr = "";
@@ -384,9 +386,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (modeActuel === 'stand') {
                 if(blocHeure) blocHeure.style.display = 'none';
                 if(msgStand) msgStand.style.display = 'block';
+                if(heureInput) heureInput.required = false; // On désactive l'obligation
             } else {
                 if(blocHeure) blocHeure.style.display = 'block';
                 if(msgStand) msgStand.style.display = 'none';
+                if(heureInput) heureInput.required = true; // On active l'obligation
                 genererHeuresLibres(valeurDate, jourChoisi);
             }
         });
@@ -412,11 +416,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (labelLivraison) labelLivraison.innerHTML += "<br><small style='color: #e74c3c; font-weight: bold; margin-left: 25px;'>⚠️ Minimum 50€ requis.</small>";
         }
 
-        const resetDate = () => { if (dateInput) dateInput.value = ''; if (blocHeure) blocHeure.style.display = 'none'; if (msgStand) msgStand.style.display = 'none'; };
+        const resetDate = () => { 
+            if (dateInput) dateInput.value = ''; 
+            if (blocHeure) blocHeure.style.display = 'none'; 
+            if (msgStand) msgStand.style.display = 'none'; 
+            if (heureInput) heureInput.required = false; // Par sécurité on enlève l'obligation au reset
+        };
 
         radioLivraison.addEventListener('change', () => { 
             if(blocLivraison) blocLivraison.style.display = 'block'; 
             if(blocMaison) blocMaison.style.display = 'none';
+            if(inputAdresse) inputAdresse.required = true; // L'adresse devient obligatoire !
             if(mapDiv) { mapDiv.style.display = 'block'; initFreeMap(); setTimeout(() => { if(map) map.invalidateSize(); }, 200); }
             resetDate();
         });
@@ -424,6 +434,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         radioStand.addEventListener('change', () => { 
             if(blocLivraison) blocLivraison.style.display = 'none'; 
             if(blocMaison) blocMaison.style.display = 'none';
+            if(inputAdresse) inputAdresse.required = false; // L'adresse n'est plus obligatoire
             if(mapDiv) mapDiv.style.display = 'none';
             resetDate();
         });
@@ -431,6 +442,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         radioMaison.addEventListener('change', () => { 
             if(blocLivraison) blocLivraison.style.display = 'none'; 
             if(blocMaison) blocMaison.style.display = 'block';
+            if(inputAdresse) inputAdresse.required = false; // L'adresse n'est plus obligatoire
             if(mapDiv) mapDiv.style.display = 'none';
             
             // CREATION DE LA CARTE DE LA MAISON
