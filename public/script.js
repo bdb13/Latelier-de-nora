@@ -86,10 +86,10 @@ function toggleVisibiliteMdp(inputId, btnOeil) {
     const input = document.getElementById(inputId);
     if (input.type === "password") {
         input.type = "text";
-        btnOeil.innerText = "🙈"; // On change l'icone quand c'est visible
+        btnOeil.innerText = "🙈"; 
     } else {
         input.type = "password";
-        btnOeil.innerText = "👁️"; // On remet l'oeil quand c'est caché
+        btnOeil.innerText = "👁️"; 
     }
 }
 
@@ -126,17 +126,15 @@ if (formInscription) {
         const mdpConf = document.getElementById('mdp-inscr-conf');
         const msgErreur = document.getElementById('erreur-mdp');
 
-        // Réinitialiser les alertes d'erreur visuelles
         mdp.classList.remove('input-erreur');
         mdpConf.classList.remove('input-erreur');
         msgErreur.style.display = 'none';
 
-        // VERIFICATION DE LA CORRESPONDANCE DES MOTS DE PASSE
         if (mdp.value !== mdpConf.value) {
             mdp.classList.add('input-erreur');
             mdpConf.classList.add('input-erreur');
             msgErreur.style.display = 'block';
-            return; // Bloque l'inscription si ce n'est pas identique
+            return; 
         }
         
         if (utilisateurs.find(u => u.email === email)) return alert("Cet email est déjà utilisé.");
@@ -398,14 +396,32 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         dateInput.addEventListener('change', (e) => {
             let valeurDate = e.target.value;
-            if (valeurDate < minDateStr) { alert("⚠️ 5 jours minimum pour la préparation !"); e.target.value = ''; return; }
+            
+            // CORRECTION BUG CALENDRIER MOBILE: Si la date est vide, on arrête tout (pas d'erreur).
+            if (!valeurDate) { 
+                if (blocHeure) blocHeure.style.display = 'none';
+                if (msgStand) msgStand.style.display = 'none';
+                if (heureInput) heureInput.required = false;
+                return; 
+            }
+
+            if (valeurDate < minDateStr) { 
+                alert("⚠️ 5 jours minimum pour la préparation !"); 
+                e.target.value = ''; 
+                if (blocHeure) blocHeure.style.display = 'none';
+                if (msgStand) msgStand.style.display = 'none';
+                if (heureInput) heureInput.required = false;
+                return; 
+            }
 
             let jourChoisi = new Date(valeurDate).getDay();
             let modeActuel = document.querySelector('input[name="recuperation"]:checked').value;
 
             if (modeActuel === 'stand' && ![0, 3, 5].includes(jourChoisi)) {
                 alert("❌ Le marché de Gardanne n'a lieu que les Mercredis, Vendredis et Dimanches.");
-                e.target.value = ''; return;
+                e.target.value = ''; 
+                if (msgStand) msgStand.style.display = 'none';
+                return;
             }
 
             if (modeActuel === 'stand') {
