@@ -15,7 +15,7 @@ mongoose.connect(MONGO_URI)
 const CommandeSchema = new mongoose.Schema({
     id: String, nom: String, emailClient: String, tel: String,
     total: Number, methode: String, adresse: String,
-    date: String, notes: String, articles: Array, statut: String
+    date: String, heure: String, notes: String, articles: Array, statut: String
 });
 const Commande = mongoose.model('Commande', CommandeSchema);
 
