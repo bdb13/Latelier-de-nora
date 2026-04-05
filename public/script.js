@@ -81,6 +81,18 @@ function motDePasseOublie() {
     } else { alert("❌ Numéro de téléphone incorrect. La réinitialisation a été annulée."); }
 }
 
+// --- GESTION DU BOUTON OEIL POUR LE MOT DE PASSE ---
+function toggleVisibiliteMdp(inputId, btnOeil) {
+    const input = document.getElementById(inputId);
+    if (input.type === "password") {
+        input.type = "text";
+        btnOeil.innerText = "🙈"; // On change l'icone quand c'est visible
+    } else {
+        input.type = "password";
+        btnOeil.innerText = "👁️"; // On remet l'oeil quand c'est caché
+    }
+}
+
 // --- CONNEXION / INSCRIPTION ---
 const formConnexion = document.getElementById('form-connexion');
 const formInscription = document.getElementById('form-inscription');
@@ -110,11 +122,26 @@ if (formInscription) {
         const nom = document.getElementById('nom-inscr').value.trim();
         const tel = document.getElementById('tel-inscr').value.trim();
         const email = document.getElementById('email-inscr').value.trim();
-        const mdp = document.getElementById('mdp-inscr').value;
+        const mdp = document.getElementById('mdp-inscr');
+        const mdpConf = document.getElementById('mdp-inscr-conf');
+        const msgErreur = document.getElementById('erreur-mdp');
+
+        // Réinitialiser les alertes d'erreur visuelles
+        mdp.classList.remove('input-erreur');
+        mdpConf.classList.remove('input-erreur');
+        msgErreur.style.display = 'none';
+
+        // VERIFICATION DE LA CORRESPONDANCE DES MOTS DE PASSE
+        if (mdp.value !== mdpConf.value) {
+            mdp.classList.add('input-erreur');
+            mdpConf.classList.add('input-erreur');
+            msgErreur.style.display = 'block';
+            return; // Bloque l'inscription si ce n'est pas identique
+        }
         
         if (utilisateurs.find(u => u.email === email)) return alert("Cet email est déjà utilisé.");
         
-        fetch('/api/utilisateurs', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nom, tel, email, mdp }) })
+        fetch('/api/utilisateurs', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nom, tel, email, mdp: mdp.value }) })
         .then(() => { localStorage.setItem('utilisateurActuelNora', JSON.stringify({nom, tel, email})); window.location.href = "index.html"; });
     });
 }
@@ -233,7 +260,6 @@ function genererHeuresLibres(dateChoisieStr, jourSemaine) {
     if (!heureSelect) return;
     heureSelect.innerHTML = '<option value="" disabled selected>Choisissez une heure</option>';
     
-    // De 13h à 19h les jours de marché (0,3,5), sinon de 9h à 19h.
     let heureDebut = ([0, 3, 5].includes(jourSemaine)) ? 13 : 9;
     let heureFin = 19;
     let commandesCeJour = commandes.filter(c => c.date === dateChoisieStr && c.methode !== 'stand');
@@ -246,7 +272,6 @@ function genererHeuresLibres(dateChoisieStr, jourSemaine) {
             let option = document.createElement('option');
             option.value = formatHeure;
 
-            // Bloque si le créneau est déjà pris
             let estPris = commandesCeJour.some(c => c.heure === formatHeure);
             if (estPris) {
                 option.disabled = true; option.innerText = `❌ ${formatHeure} - Indisponible`; option.style.color = "red";
@@ -386,11 +411,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (modeActuel === 'stand') {
                 if(blocHeure) blocHeure.style.display = 'none';
                 if(msgStand) msgStand.style.display = 'block';
-                if(heureInput) heureInput.required = false; // On désactive l'obligation
+                if(heureInput) heureInput.required = false; 
             } else {
                 if(blocHeure) blocHeure.style.display = 'block';
                 if(msgStand) msgStand.style.display = 'none';
-                if(heureInput) heureInput.required = true; // On active l'obligation
+                if(heureInput) heureInput.required = true; 
                 genererHeuresLibres(valeurDate, jourChoisi);
             }
         });
@@ -420,13 +445,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (dateInput) dateInput.value = ''; 
             if (blocHeure) blocHeure.style.display = 'none'; 
             if (msgStand) msgStand.style.display = 'none'; 
-            if (heureInput) heureInput.required = false; // Par sécurité on enlève l'obligation au reset
+            if (heureInput) heureInput.required = false; 
         };
 
         radioLivraison.addEventListener('change', () => { 
             if(blocLivraison) blocLivraison.style.display = 'block'; 
             if(blocMaison) blocMaison.style.display = 'none';
-            if(inputAdresse) inputAdresse.required = true; // L'adresse devient obligatoire !
+            if(inputAdresse) inputAdresse.required = true; 
             if(mapDiv) { mapDiv.style.display = 'block'; initFreeMap(); setTimeout(() => { if(map) map.invalidateSize(); }, 200); }
             resetDate();
         });
@@ -434,7 +459,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         radioStand.addEventListener('change', () => { 
             if(blocLivraison) blocLivraison.style.display = 'none'; 
             if(blocMaison) blocMaison.style.display = 'none';
-            if(inputAdresse) inputAdresse.required = false; // L'adresse n'est plus obligatoire
+            if(inputAdresse) inputAdresse.required = false; 
             if(mapDiv) mapDiv.style.display = 'none';
             resetDate();
         });
@@ -442,10 +467,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         radioMaison.addEventListener('change', () => { 
             if(blocLivraison) blocLivraison.style.display = 'none'; 
             if(blocMaison) blocMaison.style.display = 'block';
-            if(inputAdresse) inputAdresse.required = false; // L'adresse n'est plus obligatoire
+            if(inputAdresse) inputAdresse.required = false; 
             if(mapDiv) mapDiv.style.display = 'none';
             
-            // CREATION DE LA CARTE DE LA MAISON
             if(!mapNora) {
                 mapNora = L.map('map-nora').setView(coordNora, 16);
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OSM' }).addTo(mapNora);
