@@ -81,7 +81,6 @@ function motDePasseOublie() {
     } else { alert("❌ Numéro de téléphone incorrect. La réinitialisation a été annulée."); }
 }
 
-// --- GESTION DU BOUTON OEIL POUR LE MOT DE PASSE ---
 function toggleVisibiliteMdp(inputId, btnOeil) {
     const input = document.getElementById(inputId);
     if (input.type === "password") {
@@ -304,6 +303,9 @@ function genererHeuresLibres(dateChoisieStr, jourSemaine) {
     }
 }
 
+// ==========================================
+// SOUMISSION DE COMMANDE -> REDIRECTION STRIPE
+// ==========================================
 const formCmd = document.getElementById('form-commande');
 if (formCmd) {
     formCmd.addEventListener('submit', async (e) => {
@@ -343,21 +345,47 @@ if (formCmd) {
         if (methodeChoisie === 'maison') adresseFinale = document.getElementById('adresse-nora-texte').innerText.replace('Chargement de l\'adresse...', 'Retrait chez Nora');
         if (methodeChoisie === 'livraison') adresseFinale = adresseSaisie;
 
-        const nouvelleCommande = { 
+        // ON PRÉPARE LES DONNÉES (ON NE SAUVEGARDE PLUS ICI)
+        const commandeAValider = { 
             id: numCommande, nom: document.getElementById('nom').value, 
             emailClient: utilisateurConnecte.email, tel: document.getElementById('telephone').value, 
             total: calculerTotal(), methode: methodeChoisie, adresse: adresseFinale, 
             date: dateChoisie, heure: heureChoisie, notes: notesSaisies, articles: [...panier], statut: 'recu' 
         };
         
-        const res = await fetch('/api/commandes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(nouvelleCommande) });
+        // On la garde en mémoire dans le téléphone/navigateur
+        localStorage.setItem('commandeEnAttente', JSON.stringify(commandeAValider));
 
-        if (res.ok) {
-            localStorage.removeItem('panierNora');
-            alert("⏳ Envoi du mail de confirmation...");
-            await envoyerMailCommande(nouvelleCommande);
-            alert(`✅ Commande confirmée ! Numéro : ${numCommande}. Un mail a été envoyé.`);
-            window.location.href = "suivi.html";
+        const boutonValider = document.querySelector('#form-commande button[type="submit"]');
+        boutonValider.innerText = "⏳ Redirection vers la banque...";
+        boutonValider.disabled = true;
+
+        try {
+            // On demande la création de la page de paiement au serveur
+            const resPaiement = await fetch('/api/create-checkout-session', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    articles: panier, 
+                    emailClient: utilisateurConnecte.email,
+                    numCommande: numCommande 
+                })
+            });
+
+            const data = await resPaiement.json();
+            if (data.url) {
+                // Si tout est bon, on envoie le client sur Stripe !
+                window.location.href = data.url; 
+            } else {
+                alert("Erreur de connexion au système de paiement.");
+                boutonValider.innerText = "🔒 Payer ma commande";
+                boutonValider.disabled = false;
+            }
+        } catch (err) {
+            console.error("Erreur", err);
+            alert("Serveur de paiement injoignable.");
+            boutonValider.innerText = "🔒 Payer ma commande";
+            boutonValider.disabled = false;
         }
     });
 }
@@ -420,7 +448,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         dateInput.addEventListener('input', (e) => {
             let valeurDate = e.target.value;
             
-            // CORRECTION CALENDRIER MOBILE : Si on efface/tourne la roulette, on ne fait rien
             if (!valeurDate) { 
                 if (blocHeure) blocHeure.style.display = 'none';
                 if (msgStand) msgStand.style.display = 'none';
@@ -428,7 +455,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return; 
             }
 
-            // CORRECTION SILENCIEUSE : Force la date minimale au lieu de spammer d'alertes
             if (valeurDate < minDateStr) { 
                 e.target.value = minDateStr; 
                 valeurDate = minDateStr;
@@ -437,7 +463,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             let jourChoisi = new Date(valeurDate).getDay();
             let modeActuel = document.querySelector('input[name="recuperation"]:checked').value;
 
-            // Bloque les jours hors marché pour le Stand
             if (modeActuel === 'stand' && ![0, 3, 5].includes(jourChoisi)) {
                 alert("❌ Le marché de Gardanne n'a lieu que les Mercredis, Vendredis et Dimanches. Veuillez choisir une de ces dates.");
                 e.target.value = ''; 
