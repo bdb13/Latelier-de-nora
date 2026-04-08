@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paiement Réussi ! - L'atelier de NORA</title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=2">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+</head>
+<body class="catalogue-bg">
+
+    <header class="header-fin">
+        <a href="index.html" class="logo-titre">
+            <span class="script">L'atelier De</span> <span class="serif">NORA</span>
+        </a>
+        <nav style="display: flex; align-items: center;">
+            <a href="index.html">Accueil</a>
+            <a href="catalogue.html">Nos Douceurs</a>
+            <a href="panier.html">Mon Panier</a>
+            <span id="menu-auth-dynamique"></span>
+        </nav>
+    </header>
+
+    <main style="padding: 20px;">
+        <div class="connexion-container" style="margin-top:80px; padding: 50px;">
+            <h1 style="color:var(--status-vert); font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 10px;">✅ Paiement Réussi !</h1>
+            <p id="message-final" style="font-size: 1.2rem; font-weight: bold; color: var(--pine-green);">Finalisation de votre commande en cours...</p>
+            
+            <div id="loader" style="font-size: 3rem; animation: pulse 1s infinite; margin: 30px 0;">⏳</div>
+            
+            <br>
+            <a href="suivi.html" class="bouton" id="btn-suivi" style="display:none; font-size: 1.2rem; padding: 15px 30px;">📦 Suivre ma commande</a>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const commandeJson = localStorage.getItem('commandeEnAttente');
+            
+            if (!commandeJson) {
+                document.getElementById('message-final').innerText = "Aucune commande en attente n'a été trouvée.";
+                document.getElementById('loader').style.display = "none";
+                return;
+            }
+
+            const commande = JSON.parse(commandeJson);
+
+            try {
+                // 1. Sauvegarde dans MongoDB maintenant que le client a payé
+                const res = await fetch('/api/commandes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(commande)
+                });
+
+                if (res.ok) {
+                    // 2. Envoi de l'email avec la nouvelle adresse
+                    await envoyerMailCommande(commande);
+                    
+                    // 3. On vide le panier
+                    localStorage.removeItem('commandeEnAttente');
+                    localStorage.removeItem('panierNora');
+                    
+                    // 4. On affiche le bouton de suivi
+                    document.getElementById('message-final').innerText = `Merci ${commande.nom.split(' ')[0]} ! Votre commande ${commande.id} est validée. Un email de confirmation vous a été envoyé.`;
+                    document.getElementById('message-final').style.color = "var(--pine-green)";
+                    document.getElementById('loader').style.display = "none";
+                    document.getElementById('btn-suivi').style.display = "inline-block";
+                    
+                    // Met à jour le compteur du panier en haut de page
+                    mettreAJourCompteur();
+                }
+            } catch (err) {
+                console.error("Erreur :", err);
+                document.getElementById('message-final').innerText = "Une erreur est survenue lors de l'enregistrement de votre commande. Veuillez nous contacter.";
+                document.getElementById('message-final').style.color = "red";
+                document.getElementById('loader').style.display = "none";
+            }
+        });
+    </script>
+</body>
+</html>
