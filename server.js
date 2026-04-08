@@ -1,10 +1,15 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
+
+// --- AJOUT DU MOTEUR STRIPE ---
+// --- AJOUT DU MOTEUR STRIPE ---
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 🔗 TON LIEN MONGODB (Intégré avec le bon mot de passe)
+// 🔗 TON LIEN MONGODB
 const MONGO_URI = "mongodb+srv://nora:nora123@cluster0.spqu3ym.mongodb.net/?appName=Cluster0";
 
 mongoose.connect(MONGO_URI)
@@ -26,6 +31,42 @@ const Utilisateur = mongoose.model('Utilisateur', UtilisateurSchema);
 
 app.use(express.json());
 app.use(express.static('public'));
+
+// --- NOUVELLE ROUTE STRIPE (PAIEMENT EN LIGNE) ---
+app.post('/api/create-checkout-session', async (req, res) => {
+    try {
+        const { articles, emailClient, numCommande } = req.body;
+
+        // Transformation des articles de Nora au format lu par Stripe
+        const line_items = articles.map(item => ({
+            price_data: {
+                currency: 'eur',
+                product_data: {
+                    name: item.nom,
+                },
+                unit_amount: Math.round(item.prix * 100), // Stripe calcule en centimes (Ex: 5€ = 500)
+            },
+            quantity: item.quantite,
+        }));
+
+        // Création de la page de paiement sécurisée
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: line_items,
+            mode: 'payment',
+            customer_email: emailClient,
+            success_url: `${req.headers.origin}/succes.html?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${req.headers.origin}/commande.html`,
+            client_reference_id: numCommande
+        });
+
+        // On renvoie l'URL de la page Stripe au site
+        res.json({ url: session.url });
+    } catch (err) {
+        console.error("Erreur Stripe:", err);
+        res.status(500).json({ error: err.message });
+    }
+});
 
 // --- ROUTES COMMANDES ---
 app.get('/api/commandes', async (req, res) => {
