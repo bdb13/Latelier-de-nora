@@ -1,5 +1,5 @@
 // --- CONFIGURATION EMAILJS ---
-const EMAILJS_SERVICE_ID = "service_u4rqr1l";
+const EMAILJS_SERVICE_ID = "service_x7f97zd";
 const EMAILJS_PUBLIC_KEY = "4gDY60-yYSsIDN7sU";
 const TEMPLATE_NOUVELLE_COMMANDE = "template_uejzl8o";
 const TEMPLATE_CHANGEMENT_STATUT = "template_91s0ptq";
