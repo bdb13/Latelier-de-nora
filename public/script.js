@@ -151,7 +151,7 @@ function switchForm(versConnexion) {
 // --- FONCTIONS EMAILS ---
 async function envoyerMailCommande(commande) {
     if (typeof emailjs === 'undefined') return;
-    let texteHeure = commande.methode === 'stand' ? 'Matin (8h - 12h)' : commande.heure;
+    let texteHeure = commande.methode === 'stand' ? 'Matin (9h - 12h)' : commande.heure;
     
     const templateParams = {
         to_name: commande.nom, to_email: commande.emailClient, admin_email: "latelierdenora.stg@gmail.com",
@@ -176,7 +176,7 @@ function envoyerWhatsApp(idCmd) {
     if (!cmd) return;
 
     let prenom = cmd.nom.split(' ')[0];
-    let texteHeure = cmd.methode === 'stand' ? 'le matin entre 8h et 12h' : `à ${cmd.heure}`;
+    let texteHeure = cmd.methode === 'stand' ? 'le matin entre 9h et 12h' : `à ${cmd.heure}`;
     let dateF = new Date(cmd.date).toLocaleDateString('fr-FR');
     
     let phraseStatut = "";
@@ -184,7 +184,7 @@ function envoyerWhatsApp(idCmd) {
     else if(cmd.statut === 'preparation') phraseStatut = "est maintenant en préparation... 🍪";
     else phraseStatut = "est prête ! Tu peux venir la récupérer. ✨";
 
-    let modeTexte = cmd.methode === 'stand' ? 'Marché de Gardanne' : (cmd.methode === 'maison' ? 'Retrait chez Nora' : 'Livraison');
+    let modeTexte = cmd.methode === 'stand' ? 'Retrait au Marché' : (cmd.methode === 'maison' ? 'Retrait chez Nora' : 'Livraison');
     let message = `Coucou ${prenom} ! C'est Nora de l'Atelier. Ta commande ${cmd.id} ${phraseStatut}\n\n📅 Prévue le : ${dateF} ${texteHeure}\n📦 Mode : ${modeTexte}\n\nÀ très vite ! 👩‍🍳`;
     
     let telPropre = cmd.tel.replace(/\s/g, '');
@@ -280,11 +280,12 @@ function genererHeuresLibres(dateChoisieStr, jourSemaine) {
     if (!heureSelect) return;
     heureSelect.innerHTML = '<option value="" disabled selected>Choisissez une heure</option>';
     
-    let heureDebut = ([0, 3, 5].includes(jourSemaine)) ? 13 : 9;
-    let heureFin = 19;
+    // 0=Dimanche, 2=Mardi, 5=Vendredi, 6=Samedi
+    let estJourDeMarche = [0, 2, 5, 6].includes(jourSemaine);
+    let heureDebut = estJourDeMarche ? 14 : 9;
     let commandesCeJour = commandes.filter(c => c.date === dateChoisieStr && c.methode !== 'stand');
 
-    for (let h = heureDebut; h <= heureFin; h++) {
+    for (let h = heureDebut; h <= 19; h++) {
         ['00', '30'].forEach(min => {
             if (h === 19 && min === '30') return; 
             
@@ -322,7 +323,7 @@ if (formCmd) {
         }
 
         const methodeChoisie = document.querySelector('input[name="recuperation"]:checked').value;
-        let heureChoisie = "08:00 - 12:00"; 
+        let heureChoisie = "09:00 - 12:00"; 
         
         if (methodeChoisie !== 'stand') {
             heureChoisie = document.getElementById('heure-retrait').value;
@@ -345,7 +346,7 @@ if (formCmd) {
         if (methodeChoisie === 'maison') adresseFinale = document.getElementById('adresse-nora-texte').innerText.replace('Chargement de l\'adresse...', 'Retrait chez Nora');
         if (methodeChoisie === 'livraison') adresseFinale = adresseSaisie;
 
-        // ON PRÉPARE LES DONNÉES (ON NE SAUVEGARDE PLUS ICI)
+        // ON PRÉPARE LES DONNÉES
         const commandeAValider = { 
             id: numCommande, nom: document.getElementById('nom').value, 
             emailClient: utilisateurConnecte.email, tel: document.getElementById('telephone').value, 
@@ -353,7 +354,6 @@ if (formCmd) {
             date: dateChoisie, heure: heureChoisie, notes: notesSaisies, articles: [...panier], statut: 'recu' 
         };
         
-        // On la garde en mémoire dans le téléphone/navigateur
         localStorage.setItem('commandeEnAttente', JSON.stringify(commandeAValider));
 
         const boutonValider = document.querySelector('#form-commande button[type="submit"]');
@@ -361,7 +361,6 @@ if (formCmd) {
         boutonValider.disabled = true;
 
         try {
-            // On demande la création de la page de paiement au serveur
             const resPaiement = await fetch('/api/create-checkout-session', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -374,7 +373,6 @@ if (formCmd) {
 
             const data = await resPaiement.json();
             if (data.url) {
-                // Si tout est bon, on envoie le client sur Stripe !
                 window.location.href = data.url; 
             } else {
                 alert("Erreur de connexion au système de paiement.");
@@ -463,8 +461,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             let jourChoisi = new Date(valeurDate).getDay();
             let modeActuel = document.querySelector('input[name="recuperation"]:checked').value;
 
-            if (modeActuel === 'stand' && ![0, 3, 5].includes(jourChoisi)) {
-                alert("❌ Le marché de Gardanne n'a lieu que les Mercredis, Vendredis et Dimanches. Veuillez choisir une de ces dates.");
+            // Nouveaux Jours de Marché : 0=Dim, 2=Mar, 5=Ven, 6=Sam
+            if (modeActuel === 'stand' && ![0, 2, 5, 6].includes(jourChoisi)) {
+                alert("❌ Nora n'est sur les marchés que le Mardi (Aubagne), Vendredi (Gardanne), Samedi (Plan de Cuques) et Dimanche (Gardanne).");
                 e.target.value = ''; 
                 if (msgStand) msgStand.style.display = 'none';
                 return;
