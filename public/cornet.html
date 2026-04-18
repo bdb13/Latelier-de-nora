@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cornes d'abondance - L'atelier De NORA</title>
+  <link rel="icon" type="image/png" href="images/logo.png">
+  <link rel="stylesheet" href="style.css?v=2">
+</head>
+<body>
+
+  <header class="header-fin">
+    <a href="index.html" class="logo-titre">
+      <span class="script">L'atelier De</span> <span class="serif">NORA</span>
+    </a>
+    <nav style="display: flex; align-items: center;">
+      <a href="index.html">Accueil</a>
+      <a href="catalogue.html">Nos Douceurs</a>
+      <a href="nos-prestations.html">Nos Prestations</a>
+      <a href="qui-sommes-nous.html">Qui sommes-nous ?</a>
+      <a href="panier.html">Mon Panier</a>
+      <span id="menu-auth-dynamique"></span>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-produit">
+      <img src="images/cornet.jpg" alt="Cornes d'abondance" class="image-principale">
+      
+      <div class="details">
+        <h2>Cornes d'abondance</h2>
+        <p class="prix-gros">1,50 € l'unité</p>
+        
+        <p><strong>Ingrédients :</strong> Amandes concassées, miel pur, pâte croustillante, beurre frais.</p>
+        <div class="produit-argument">✨ Un délice croustillant au cœur tendre d'amandes caramélisées au miel. Un voyage gustatif direct en Algérie.</div>
+        
+        <div class="action-produit">
+            <div class="selecteur-qte">
+                <button class="btn-qte" onclick="modifierQuantiteProduit(-1)">-</button>
+                <input type="number" id="qte-produit" class="input-qte" value="1" min="1" readonly>
+                <button class="btn-qte" onclick="modifierQuantiteProduit(1)">+</button>
+            </div>
+            <button onclick="ajouterDepuisProduit('Cornes d\'abondance', 1.50, 'images/cornet.jpg')" class="bouton">🛒 Ajouter</button>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="recommandations">
+      <h2>D'autres douceurs...</h2>
+      <div class="grille-produits" style="padding: 20px 0;">
+        <a href="makrout.html" class="carte"><img src="images/makrout.jpg" alt="Makrout"><div class="carte-overlay"><h3>Makrout</h3><span class="bouton-voir">Voir Plus</span></div></a>
+        <a href="samsas.html" class="carte"><img src="images/samsas.jpg" alt="Samsas"><div class="carte-overlay"><h3>Samsas</h3><span class="bouton-voir">Voir Plus</span></div></a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+      <ul class="contact-info">
+          <li>📞 <a href="tel:+33612829293">06.12.82.92.93</a></li>
+          <li>📸 <a href="https://instagram.com/latelierdenoraa" target="_blank">Instagram : @latelierdenoraa</a></li>
+          <li>✉️ <a href="mailto:latelierdenora.stg@gmail.com">latelierdenora.stg@gmail.com</a></li>
+      </ul>
+      <br>
+      <p>© 2026 L'atelier De NORA</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
