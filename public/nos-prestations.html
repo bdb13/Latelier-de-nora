@@ -1,88 +1,99 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Événements - L'atelier de NORA</title>
-    <link rel="icon" type="image/png" href="images/logo.png">
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nos Prestations - L'atelier De NORA</title>
+  <link rel="icon" type="image/png" href="images/logo.png">
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=2">
 </head>
 <body class="catalogue-bg">
 
-    <header class="header-fin">
-        <a href="index.html" class="logo-titre">
-            <span class="script">L'atelier De</span> <span class="serif">NORA</span>
-        </a>
-        <nav style="display: flex; align-items: center;">
-            <a href="index.html">Accueil</a>
-            <a href="catalogue.html">Nos Douceurs</a>
-            <a href="evenements.html">Événements</a>
-            <a href="qui-sommes-nous.html">L'atelier</a>
-            <a href="panier.html">Mon Panier</a>
-            <span id="menu-auth-dynamique"></span>
-        </nav>
-    </header>
+  <header class="header-fin">
+    <a href="index.html" class="logo-titre">
+      <span class="script">L'atelier De</span> <span class="serif">NORA</span>
+    </a>
+    <nav style="display: flex; align-items: center;">
+      <a href="index.html">Accueil</a>
+      <a href="catalogue.html">Nos Douceurs</a>
+      <a href="nos-prestations.html" style="font-weight: bold; color: var(--gold-accent);">Nos Prestations</a>
+      <a href="qui-sommes-nous.html">Qui sommes-nous ?</a>
+      <a href="panier.html">Mon Panier</a>
+      <span id="menu-auth-dynamique"></span>
+    </nav>
+  </header>
 
-    <main style="padding: 40px 20px; max-width: 1000px; margin: 0 auto;">
+  <main style="padding: 40px 20px; max-width: 1000px; margin: 0 auto;">
+    
+    <section style="text-align: center; margin-bottom: 50px;">
+        <h1 style="font-family: 'Playfair Display', serif; color: var(--pine-green); font-size: 2.8rem; margin-bottom: 15px;">Événements & Commandes Spéciales</h1>
+        <p style="font-size: 1.2rem; color: #555; line-height: 1.6; max-width: 800px; margin: 0 auto;">
+            Mariages, baptêmes, anniversaires, comités d'entreprise ou célébrations religieuses... <br>
+            <strong>L'atelier de NORA</strong> vous accompagne dans tous vos moments de joie avec des pâtisseries artisanales sur-mesure.
+        </p>
+    </section>
+
+    <section style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-bottom: 50px;">
+        <div style="flex: 1 1 400px; max-width: 480px; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.1); border: 2px solid var(--gold-accent);">
+            <img src="images/prestation-1.jpg" alt="Boîtes de pâtisseries événement" style="width: 100%; height: auto; display: block; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+        </div>
+        <div style="flex: 1 1 400px; max-width: 480px; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.1); border: 2px solid var(--gold-accent);">
+            <img src="images/prestation-2.jpg" alt="Présentation stand pâtisseries" style="width: 100%; height: auto; display: block; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+        </div>
+    </section>
+
+    <section style="background: white; padding: 40px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 50px;">
+        <h2 style="color: var(--gold-accent); text-align: center; margin-bottom: 30px;">Ce que nous vous proposons :</h2>
         
-        <div style="text-align: center; margin-bottom: 50px;">
-            <h1 class="script" style="font-size: 3.8rem; color: var(--gold-accent); margin-bottom: 10px;">Vos Événements sur Mesure</h1>
-            <p style="font-size: 1.2rem; color: #555; max-width: 700px; margin: 0 auto; line-height: 1.6;">
-                Parce que vos moments précieux méritent des douceurs d'exception. L'atelier de NORA vous accompagne pour régaler vos invités avec des créations artisanales.
-            </p>
-        </div>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 50px;">
-            
-            <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center;">
-                <span style="font-size: 3rem; display: block; margin-bottom: 15px;">💍</span>
-                <h3 style="color: var(--pine-green); font-size: 1.5rem; margin-bottom: 15px;">Mariages & Fiançailles</h3>
-                <p style="color: #666; line-height: 1.6;">Des plateaux de douceurs orientales raffinées pour éblouir vos invités et apporter une touche d'élégance à vos tables.</p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px;">
+            <div style="text-align: center;">
+                <span style="font-size: 2.5rem; display: block; margin-bottom: 10px;">🎁</span>
+                <h3 style="color: var(--pine-green); margin-bottom: 10px;">Cadeaux d'invités</h3>
+                <p style="color: #666; font-size: 0.95rem;">Des petites boîtes individuelles élégantes garnies de nos meilleures douceurs, parfaites pour remercier vos convives.</p>
             </div>
-
-            <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center;">
-                <span style="font-size: 3rem; display: block; margin-bottom: 15px;">👶</span>
-                <h3 style="color: var(--pine-green); font-size: 1.5rem; margin-bottom: 15px;">Baptêmes & Naissances</h3>
-                <p style="color: #666; line-height: 1.6;">Célébrez l'arrivée de vos petits avec des assortiments gourmands, parfaits pour accompagner le thé et le café.</p>
+            <div style="text-align: center;">
+                <span style="font-size: 2.5rem; display: block; margin-bottom: 10px;">✨</span>
+                <h3 style="color: var(--pine-green); margin-bottom: 10px;">Plateaux sur-mesure</h3>
+                <p style="color: #666; font-size: 0.95rem;">Composition de grands plateaux traditionnels pour habiller vos tables de fête et régaler vos invités.</p>
             </div>
-
-            <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center;">
-                <span style="font-size: 3rem; display: block; margin-bottom: 15px;">🎂</span>
-                <h3 style="color: var(--pine-green); font-size: 1.5rem; margin-bottom: 15px;">Anniversaires & Fêtes</h3>
-                <p style="color: #666; line-height: 1.6;">Faites de vos réceptions familiales un moment inoubliable avec des pâtisseries généreuses 100% fait maison.</p>
-            </div>
-
-            <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center;">
-                <span style="font-size: 3rem; display: block; margin-bottom: 15px;">🏢</span>
-                <h3 style="color: var(--pine-green); font-size: 1.5rem; margin-bottom: 15px;">Événements d'Entreprise</h3>
-                <p style="color: #666; line-height: 1.6;">Séminaires, pots de départ ou réceptions clients. Nous adaptons nos quantités à vos besoins professionnels.</p>
-            </div>
-
-        </div>
-
-        <div style="background: #fdfcf8; border: 2px solid var(--gold-accent); border-radius: 15px; padding: 40px; text-align: center;">
-            <h2 style="color: var(--pine-green); font-family: 'Playfair Display', serif; margin-top: 0;">Obtenir un devis personnalisé</h2>
-            <p style="font-size: 1.1rem; color: #555; margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto;">
-                Chaque événement est unique. Nous pouvons nous déplacer directement sur le lieu de votre événement pour régaler vos convives. Contactez-nous pour discuter de vos envies !
-            </p>
-            
-            <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
-                <a href="tel:+33612829293" class="bouton" style="font-size: 1.1rem; padding: 15px 35px; background: var(--pine-green);">📞 06.12.82.92.93</a>
-                <a href="mailto:latelierdenora.stg@gmail.com" class="bouton" style="font-size: 1.1rem; padding: 15px 35px;">✉️ Demander un devis</a>
+            <div style="text-align: center;">
+                <span style="font-size: 2.5rem; display: block; margin-bottom: 10px;">🤝</span>
+                <h3 style="color: var(--pine-green); margin-bottom: 10px;">Professionnels & Stands</h3>
+                <p style="color: #666; font-size: 0.95rem;">Conditionnement adapté pour les comités d'entreprise, les séminaires ou la revente sur stand.</p>
             </div>
         </div>
+    </section>
 
-    </main>
+    <section style="text-align: center; background-color: #fdfcf8; padding: 40px; border-radius: 12px; border: 2px dashed var(--gold-accent);">
+        <h2 style="font-family: 'Playfair Display', serif; color: var(--pine-green); margin-bottom: 15px;">Un projet en tête ? Parlons-en !</h2>
+        <p style="margin-bottom: 30px; font-size: 1.1rem; color: #555;">
+            Chaque événement est unique. Contactez-nous pour nous faire part de vos envies, des quantités souhaitées et des dates.<br>Nous vous établirons un devis personnalisé très rapidement.
+        </p>
+        
+        <a href="mailto:latelierdenora.stg@gmail.com?subject=Demande de devis - Prestation / Événement&body=Bonjour Nora,%0D%0A%0D%0AJe vous contacte pour une demande de devis concernant un événement.%0D%0A%0D%0AType d'événement : %0D%0ADate de l'événement : %0D%0ANombre de personnes / de pièces : %0D%0ABesoins particuliers : %0D%0A%0D%0AMerci de me recontacter à ce numéro : %0D%0A%0D%0ACordialement," 
+           class="bouton" 
+           style="display: inline-block; font-size: 1.2rem; padding: 15px 40px; text-decoration: none; border-radius: 30px; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);">
+           ✉️ Demander un devis par e-mail
+        </a>
+        
+        <p style="margin-top: 20px; color: #777; font-size: 0.9rem;">
+            Ou contactez-nous directement par téléphone au <br><a href="tel:+33612829293" style="color: var(--pine-green); font-weight: bold; text-decoration: none; font-size: 1.1rem;">📞 06.12.82.92.93</a>
+        </p>
+    </section>
 
-    <footer style="margin-top: 40px;">
-        <ul class="contact-info">
-            <li>📸 <a href="https://instagram.com/latelierdenoraa" target="_blank">Instagram : @latelierdenoraa</a></li>
-        </ul>
-        <br>
-        <p>© 2026 L'atelier de NORA - Artisanat de Gardanne</p>
-    </footer>
+  </main>
 
-    <script src="script.js"></script>
+  <footer>
+      <ul class="contact-info">
+          <li>📞 <a href="tel:+33612829293">06.12.82.92.93</a></li>
+          <li>📸 <a href="https://instagram.com/latelierdenoraa" target="_blank">Instagram : @latelierdenoraa</a></li>
+          <li>✉️ <a href="mailto:latelierdenora.stg@gmail.com">latelierdenora.stg@gmail.com</a></li>
+      </ul>
+      <br>
+      <p>© 2026 L'atelier De NORA</p>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
