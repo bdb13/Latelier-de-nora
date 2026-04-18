@@ -17,6 +17,8 @@
     <nav style="display: flex; align-items: center;">
       <a href="index.html">Accueil</a>
       <a href="catalogue.html">Nos Douceurs</a>
+      <a href="nos-prestations.html">Nos Prestations</a>
+      <a href="qui-sommes-nous.html">Qui sommes-nous ?</a>
       <a href="panier.html">Mon Panier</a>
       <span id="menu-auth-dynamique"></span>
     </nav>
@@ -61,7 +63,7 @@
                 let texte = cmd.statut === 'recu' ? 'Reçue' : (cmd.statut === 'preparation' ? 'En préparation' : 'Prête !');
                 
                 let modeIcon = cmd.methode === 'livraison' ? '🚚 Livraison' : (cmd.methode === 'maison' ? '🏠 Retrait chez Nora' : '🛍️ Retrait au Stand');
-                let heureText = cmd.methode === 'stand' ? 'Matin (8h-12h)' : (cmd.heure || 'Non précisée');
+                let heureText = cmd.methode === 'stand' ? 'Matin (9h-12h)' : (cmd.heure || 'Non précisée');
 
                 html += `
                 <div style="background: white; border: 2px solid var(--gold-accent); padding: 20px; border-radius: 12px; margin-bottom: 15px;">
