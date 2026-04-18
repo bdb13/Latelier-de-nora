@@ -280,8 +280,10 @@ function genererHeuresLibres(dateChoisieStr, jourSemaine) {
     if (!heureSelect) return;
     heureSelect.innerHTML = '<option value="" disabled selected>Choisissez une heure</option>';
     
-    // 0=Dimanche, 2=Mardi, 5=Vendredi, 6=Samedi
+    // Nouveaux jours de marché de Nora : 0=Dimanche, 2=Mardi, 5=Vendredi, 6=Samedi
     let estJourDeMarche = [0, 2, 5, 6].includes(jourSemaine);
+    
+    // Si c'est un jour de marché, livraison/retrait maison à partir de 14h, sinon 9h
     let heureDebut = estJourDeMarche ? 14 : 9;
     let commandesCeJour = commandes.filter(c => c.date === dateChoisieStr && c.methode !== 'stand');
 
@@ -461,7 +463,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             let jourChoisi = new Date(valeurDate).getDay();
             let modeActuel = document.querySelector('input[name="recuperation"]:checked').value;
 
-            // Nouveaux Jours de Marché : 0=Dim, 2=Mar, 5=Ven, 6=Sam
+            // Protection Jours de Marché 
             if (modeActuel === 'stand' && ![0, 2, 5, 6].includes(jourChoisi)) {
                 alert("❌ Nora n'est sur les marchés que le Mardi (Aubagne), Vendredi (Gardanne), Samedi (Plan de Cuques) et Dimanche (Gardanne).");
                 e.target.value = ''; 
