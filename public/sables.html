@@ -8,11 +8,8 @@
   <link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
-
   <header class="header-fin">
-    <a href="index.html" class="logo-titre">
-      <span class="script">L'atelier De</span> <span class="serif">NORA</span>
-    </a>
+    <a href="index.html" class="logo-titre"><span class="script">L'atelier De</span> <span class="serif">NORA</span></a>
     <nav style="display: flex; align-items: center;">
       <a href="index.html">Accueil</a>
       <a href="catalogue.html">Nos Douceurs</a>
@@ -25,12 +22,22 @@
 
   <main>
     <section class="page-produit">
-      <img src="images/sables.jpg" alt="Sablés" class="image-principale">
+      <img src="images/sables.jpg" alt="Sablés" class="image-principale" id="image-sable">
       <div class="details">
-        <h2>Sablés</h2>
+        <h2>Sablés Maison</h2>
         <p class="prix-gros">1,50 € l'unité</p>
-        <p><strong>Ingrédients :</strong> Farine, œuf, beurre, vanille, sucre glace.</p>
-        <div class="produit-argument">✨ La douceur par excellence. Une texture irrésistible qui fond en bouche, idéale pour accompagner votre thé ou votre café avec délicatesse.</div>
+        
+        <div style="background: #fdfcf8; padding: 20px; border-radius: 10px; border: 1px solid var(--gold-accent); margin: 20px 0;">
+            <label style="display: block; margin-bottom: 10px; font-weight: bold; color: var(--pine-green);">Choisissez votre modèle :</label>
+            <select id="choix-sable" style="width: 100%; padding: 12px; border-radius: 5px; border: 2px solid #ddd; font-size: 1rem;" onchange="changerImageSable(this.value)">
+                <option value="Sablés Classiques (Confiture)">Sablés Lunettes (Confiture & Sucre Glace)</option>
+                <option value="Sablés de Fête (Perles)">Sablés de Fête (Perles Multicolores)</option>
+                <option value="Sablés Chocolat">Sablés au Chocolat</option>
+            </select>
+        </div>
+
+        <p><strong>Ingrédients :</strong> Farine, beurre, œuf, vanille, sucre glace, confiture ou perles de sucre.</p>
+        <div class="produit-argument">✨ Nos sablés sont fondants et préparés avec amour. Choisissez le modèle qui vous fait envie !</div>
         
         <div class="action-produit">
             <div class="selecteur-qte">
@@ -38,30 +45,31 @@
                 <input type="number" id="qte-produit" class="input-qte" value="1" min="1" readonly>
                 <button class="btn-qte" onclick="modifierQuantiteProduit(1)">+</button>
             </div>
-            <button onclick="ajouterDepuisProduit('Sablés', 1.50, 'images/sables.jpg')" class="bouton">🛒 Ajouter</button>
+            <button onclick="ajouterSableSelectionne()" class="bouton">🛒 Ajouter au panier</button>
         </div>
-
-      </div>
-    </section>
-
-    <section class="recommandations">
-      <h2>Nos clients ont aussi aimé...</h2>
-      <div class="grille-produits" style="padding: 20px 0;">
-        <a href="samsas.html" class="carte"><img src="images/samsas.jpg" alt="Samsas"><div class="carte-overlay"><h3>Samsas</h3><span class="bouton-voir">Voir Plus</span></div></a>
-        <a href="cornes-de-gazelles.html" class="carte"><img src="images/cornes.jpg" alt="Cornes"><div class="carte-overlay"><h3>Cornes de gazelles</h3><span class="bouton-voir">Voir Plus</span></div></a>
       </div>
     </section>
   </main>
 
-  <footer>
-      <ul class="contact-info">
-          <li>📞 <a href="tel:+33612829293">06.12.82.92.93</a></li>
-          <li>📸 <a href="https://instagram.com/latelierdenoraa" target="_blank">Instagram : @latelierdenoraa</a></li>
-          <li>✉️ <a href="mailto:latelierdenora.stg@gmail.com">latelierdenora.stg@gmail.com</a></li>
-      </ul>
-      <br>
-      <p>© 2026 L'atelier De NORA</p>
-  </footer>
   <script src="script.js"></script>
+  <script>
+    function changerImageSable(valeur) {
+        const img = document.getElementById('image-sable');
+        if (valeur === "Sablés de Fête (Perles)") {
+            img.src = "images/1000000827.jpg"; // Photo avec les perles
+        } else {
+            img.src = "images/sables.jpg"; // Photo lunettes classique
+        }
+    }
+
+    function ajouterSableSelectionne() {
+        const nomComplet = document.getElementById('choix-sable').value;
+        const quantite = parseInt(document.getElementById('qte-produit').value);
+        const image = document.getElementById('image-sable').src;
+        
+        // On utilise directement la fonction de script.js
+        ajouterAuPanier(nomComplet, 1.50, image, quantite);
+    }
+  </script>
 </body>
 </html>
