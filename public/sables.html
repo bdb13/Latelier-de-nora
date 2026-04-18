@@ -25,7 +25,7 @@
 
   <main>
     <section class="page-produit">
-      <img src="images/1000000826.jpg" alt="Sablés Maison" class="image-principale" id="image-sable">
+      <img src="images/sable-confiture.jpg" alt="Sablés Maison" class="image-principale" id="image-sable">
       
       <div class="details">
         <h2>Sablés Maison</h2>
@@ -59,8 +59,8 @@
     <section class="recommandations">
       <h2>D'autres douceurs...</h2>
       <div class="grille-produits" style="padding: 20px 0;">
-        <a href="boules-coco.html" class="carte"><img src="images/1000000830.jpg" alt="Boules coco"><div class="carte-overlay"><h3>Boules coco</h3><span class="bouton-voir">Voir Plus</span></div></a>
-        <a href="cornes-de-gazelles.html" class="carte"><img src="images/IMG_20260227_082313~2.jpg" alt="Cornes"><div class="carte-overlay"><h3>Cornes de gazelles</h3><span class="bouton-voir">Voir Plus</span></div></a>
+        <a href="boules-coco.html" class="carte"><img src="images/boules-coco.jpg" alt="Boules coco"><div class="carte-overlay"><h3>Boules coco</h3><span class="bouton-voir">Voir Plus</span></div></a>
+        <a href="cornes-de-gazelles.html" class="carte"><img src="images/cornes.jpg" alt="Cornes"><div class="carte-overlay"><h3>Cornes de gazelles</h3><span class="bouton-voir">Voir Plus</span></div></a>
       </div>
     </section>
   </main>
@@ -77,12 +77,12 @@
 
   <script src="script.js"></script>
   <script>
-      // Dictionnaire pour lier chaque choix à la photo exacte que tu as envoyée
+      // Images associées aux parfums - IL FAUT RENOMMER LES PHOTOS DANS GITHUB COMME CECI
       const imagesSables = {
-          "Confiture": "images/1000000826.jpg",
-          "Nutella": "images/1000000828 (1).jpg",
-          "Vanille": "images/1000000827.jpg",
-          "Sucre Glace": "images/1000000779 (1).jpg"
+          "Confiture": "images/sable-confiture.jpg",
+          "Nutella": "images/sable-nutella.jpg",
+          "Vanille": "images/sable-vanille.jpg",
+          "Sucre Glace": "images/sable-sucre-glace.jpg"
       };
 
       function mettreAJourSable(type) {
@@ -93,14 +93,9 @@
       function ajouterSableCible() {
           const type = document.getElementById('choix-sable').value;
           const qte = parseInt(document.getElementById('qte-produit').value);
-          
-          // Le nom qui apparaîtra dans le panier (ex: "Sablé Nutella")
           const nomProduit = "Sablé " + type;
-          
-          // L'image qui apparaîtra dans le panier (la même que celle affichée à l'écran)
           const imageProduit = imagesSables[type];
           
-          // On envoie le tout au script principal !
           ajouterAuPanier(nomProduit, 1.50, imageProduit, qte);
       }
   </script>
