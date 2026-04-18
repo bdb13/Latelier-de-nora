@@ -7,46 +7,6 @@
   <link rel="icon" type="image/png" href="images/logo.png">
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=2">
-  <style>
-    /* Animations pour les cartes Marché */
-    .marche-card {
-        background: white;
-        border: 2px solid #eee;
-        border-radius: 15px;
-        padding: 25px;
-        text-align: center;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        cursor: pointer;
-        text-decoration: none;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        color: inherit;
-    }
-
-    .marche-card:hover {
-        transform: translateY(-10px) scale(1.02);
-        border-color: var(--gold-accent);
-        box-shadow: 0 15px 30px rgba(212, 175, 55, 0.2);
-    }
-
-    .marche-card i {
-        font-size: 2rem;
-        display: block;
-        margin-bottom: 15px;
-    }
-
-    .badge-direct {
-        display: inline-block;
-        background: var(--gold-accent);
-        color: white;
-        padding: 5px 12px;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: bold;
-        margin-top: 15px;
-    }
-  </style>
 </head>
 <body class="catalogue-bg">
 
@@ -64,65 +24,40 @@
     </nav>
   </header>
 
-  <main style="padding: 40px 20px; max-width: 1000px; margin: 0 auto;">
+  <main style="padding: 40px 20px; max-width: 900px; margin: 0 auto;">
     
-    <section style="text-align: center; margin-bottom: 60px;">
-        <h1 style="font-family: 'Playfair Display', serif; color: var(--pine-green); font-size: 3rem; margin-bottom: 30px;">L'Héritage de Nora</h1>
-        
-        <div style="font-size: 1.2rem; line-height: 1.8; color: #444; text-align: justify; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
-            <p>
-                L'aventure de <strong>L'atelier de NORA</strong> n'est pas née par hasard. Elle est le fruit d'un chemin tracé avec amour, celui d'une mère à sa fille. Depuis son plus jeune âge, Nora a grandi bercée par l'odeur de l'eau de fleur d'oranger et le miel chaud qui coule sur les plateaux de Baklawas.
-            </p>
-            <p style="margin-top: 20px;">
-                En suivant les traces de sa mère, gardienne des secrets de la <strong>pâtisserie artisanale orientale</strong>, Nora a appris que chaque geste compte. Le pétrissage de la pâte, le choix des amandes, la finesse du feuilletage... rien n'est laissé au hasard.
-            </p>
-            <p style="margin-top: 20px; font-style: italic; color: var(--gold-accent); text-align: center; font-weight: bold;">
-                "Plus qu'une passion, c'est un hommage à mes racines que je partage aujourd'hui avec vous."
-            </p>
-        </div>
+    <section style="background: white; padding: 40px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; margin-bottom: 50px; border: 2px solid var(--gold-accent);">
+        <h1 style="font-family: 'Playfair Display', serif; color: var(--pine-green); font-size: 2.5rem; margin-bottom: 20px;">L'Héritage d'une Passion</h1>
+        <p style="font-size: 1.15rem; color: #444; line-height: 1.8; text-align: justify;">
+            L'aventure de <strong>L'atelier de NORA</strong> est née d'un héritage précieux : celui d'une mère transmettant son savoir-faire à sa fille. En décidant de suivre le chemin tracé par sa maman, Nora perpétue aujourd'hui la tradition de la véritable <strong>pâtisserie artisanale orientale</strong>. 
+            <br><br>
+            Ici, pas de production industrielle. Chaque douceur est préparée à la main avec amour, patience, et des ingrédients soigneusement sélectionnés pour vous offrir un voyage gustatif authentique. De la finesse de nos cornes de gazelles au croustillant de nos baklawas, c'est tout l'amour d'une recette familiale que vous retrouverez dans nos boîtes.
+        </p>
     </section>
 
-    <section>
-        <h2 style="font-family: 'Playfair Display', serif; color: var(--pine-green); text-align: center; margin-bottom: 40px;">Où nous retrouver ?</h2>
-        <p style="text-align: center; margin-bottom: 30px; color: #666;">Cliquez sur un marché pour voir les infos officielles.</p>
+    <section style="text-align: center;">
+        <h2 style="font-family: 'Playfair Display', serif; color: var(--pine-green); margin-bottom: 30px; font-size: 2rem;">Où nous retrouver ?</h2>
         
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px;">
+        <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
             
-            <a href="https://www.ville-gardanne.fr/Les-marches" target="_blank" class="marche-card">
-                <div>
-                    <span style="font-size: 3rem;">☀️</span>
-                    <h3 style="color: var(--pine-green); margin: 10px 0;">Marché de Gardanne</h3>
-                    <p>Venez découvrir notre stand au cœur de Gardanne pour vos douceurs artisanales.</p>
-                </div>
-                <div class="badge-direct">Voir les infos du marché</div>
-            </a>
+            <div style="background: #fdfcf8; border: 1px solid #ddd; padding: 25px; border-radius: 10px; width: 250px;">
+                <span style="font-size: 2.5rem; display: block; margin-bottom: 10px;">☀️</span>
+                <h3 style="color: var(--pine-green); margin-bottom: 10px;">Marché de Gardanne</h3>
+                <p style="color: #666; font-size: 0.95rem;">Venez découvrir notre stand au cœur de Gardanne.</p>
+            </div>
 
-            <a href="https://www.aubagne.fr/quotidien/marches-et-foires" target="_blank" class="marche-card">
-                <div>
-                    <span style="font-size: 3rem;">🌿</span>
-                    <h3 style="color: var(--pine-green); margin: 10px 0;">Marché d'Aubagne</h3>
-                    <p>Retrouvez-nous sous le soleil d'Aubagne pour un moment gourmand.</p>
-                </div>
-                <div class="badge-direct">Voir les infos du marché</div>
-            </a>
+            <div style="background: #fdfcf8; border: 1px solid #ddd; padding: 25px; border-radius: 10px; width: 250px;">
+                <span style="font-size: 2.5rem; display: block; margin-bottom: 10px;">🌿</span>
+                <h3 style="color: var(--pine-green); margin-bottom: 10px;">Marché d'Aubagne</h3>
+                <p style="color: #666; font-size: 0.95rem;">Retrouvez-nous sous le soleil d'Aubagne pour un moment gourmand.</p>
+            </div>
 
-            <a href="https://www.plandecuques.fr/" target="_blank" class="marche-card">
-                <div>
-                    <span style="font-size: 3rem;">🍯</span>
-                    <h3 style="color: var(--pine-green); margin: 10px 0;">Marché de Plan-de-Cuques</h3>
-                    <p>Vos pâtisseries orientales préférées, préparées avec amour pour le marché.</p>
-                </div>
-                <div class="badge-direct">Voir les infos du marché</div>
-            </a>
+            <div style="background: #fdfcf8; border: 1px solid #ddd; padding: 25px; border-radius: 10px; width: 250px;">
+                <span style="font-size: 2.5rem; display: block; margin-bottom: 10px;">🍯</span>
+                <h3 style="color: var(--pine-green); margin-bottom: 10px;">Plan-de-Cuques</h3>
+                <p style="color: #666; font-size: 0.95rem;">Vos pâtisseries orientales préparées avec amour pour le marché.</p>
+            </div>
 
-        </div>
-    </section>
-
-    <section style="margin-top: 60px; text-align: center; border-top: 1px solid #ddd; padding-top: 40px;">
-        <div style="display: inline-block; padding: 20px;">
-            <span style="font-size: 1.5rem;">⭐</span>
-            <p style="font-weight: bold; color: var(--pine-green);">100% Artisanal - 100% Frais</p>
-            <p style="color: #777; font-size: 0.9rem;">Toutes nos pâtisseries sont préparées sur commande ou la veille des marchés.</p>
         </div>
     </section>
 
