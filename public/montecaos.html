@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Montecaos - L'atelier De NORA</title>
+  <link rel="icon" type="image/png" href="images/logo.png">
+  <link rel="stylesheet" href="style.css?v=2">
+</head>
+<body>
+  <header class="header-fin">
+    <a href="index.html" class="logo-titre"><span class="script">L'atelier De</span> <span class="serif">NORA</span></a>
+    <nav style="display: flex; align-items: center;">
+      <a href="index.html">Accueil</a>
+      <a href="catalogue.html">Nos Douceurs</a>
+      <a href="nos-prestations.html">Nos Prestations</a>
+      <a href="qui-sommes-nous.html">Qui sommes-nous ?</a>
+      <a href="panier.html">Mon Panier</a>
+      <span id="menu-auth-dynamique"></span>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-produit">
+      <img src="images/IMG_20260227_082253~2.jpg" alt="Montecaos" class="image-principale">
+      <div class="details">
+        <h2>Montecaos</h2>
+        <p class="prix-gros">1,50 € l'unité</p>
+        <p><strong>Ingrédients :</strong> Farine, sucre, huile végétale, cannelle.</p>
+        <div class="produit-argument">✨ Une spécialité fondante et poudreuse en bouche, surmontée d'une touche de cannelle. Simple, authentique et délicieux.</div>
+        
+        <div class="action-produit">
+            <div class="selecteur-qte">
+                <button class="btn-qte" onclick="modifierQuantiteProduit(-1)">-</button>
+                <input type="number" id="qte-produit" class="input-qte" value="1" min="1" readonly>
+                <button class="btn-qte" onclick="modifierQuantiteProduit(1)">+</button>
+            </div>
+            <button onclick="ajouterDepuisProduit('Montecaos', 1.50, 'images/IMG_20260227_082253~2.jpg')" class="bouton">🛒 Ajouter</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer><p>© 2026 L'atelier De NORA</p></footer>
+  <script src="script.js"></script>
+</body>
+</html>
