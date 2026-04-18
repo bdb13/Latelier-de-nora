@@ -8,13 +8,16 @@
   <link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
-<header class="header-fin">
+
+  <header class="header-fin">
     <a href="index.html" class="logo-titre">
       <span class="script">L'atelier De</span> <span class="serif">NORA</span>
     </a>
     <nav style="display: flex; align-items: center;">
       <a href="index.html">Accueil</a>
       <a href="catalogue.html">Nos Douceurs</a>
+      <a href="nos-prestations.html">Nos Prestations</a>
+      <a href="qui-sommes-nous.html">Qui sommes-nous ?</a>
       <a href="panier.html">Mon Panier</a>
       <span id="menu-auth-dynamique"></span>
     </nav>
@@ -25,7 +28,7 @@
       <img src="images/makrout.jpg" alt="Makrouts" class="image-principale">
       <div class="details">
         <h2>Makrouts</h2>
-        <p class="prix-gros">1,00 € l'unité</p>
+        <p class="prix-gros">1,50 € l'unité</p>
         <p><strong>Ingrédients :</strong> Semoule, beurre, fleur d'oranger, pâte à dattes, cannelle, miel.</p>
         <div class="produit-argument">✨ Le grand classique : un cœur généreux de pâte à dattes onctueuse enrobé d'une semoule fondante, le tout délicatement trempé dans un miel chaud.</div>
         
@@ -35,7 +38,7 @@
                 <input type="number" id="qte-produit" class="input-qte" value="1" min="1" readonly>
                 <button class="btn-qte" onclick="modifierQuantiteProduit(1)">+</button>
             </div>
-            <button onclick="ajouterDepuisProduit('Makrouts', 1.00, 'images/makrout.jpg')" class="bouton">🛒 Ajouter</button>
+            <button onclick="ajouterDepuisProduit('Makrouts', 1.50, 'images/makrout.jpg')" class="bouton">🛒 Ajouter</button>
         </div>
 
       </div>
@@ -44,13 +47,21 @@
     <section class="recommandations">
       <h2>Nos clients ont aussi aimé...</h2>
       <div class="grille-produits" style="padding: 20px 0;">
-        <a href="bahlawas.html" class="carte"><img src="images/bahlawas.jpg" alt="Bahlawas"><div class="carte-overlay"><h3>Bahlawas</h3><span class="bouton-voir">Voir Plus</span></div></a>
-        <a href="griwichs.html" class="carte"><img src="images/griwichs.jpg" alt="Griwichs"><div class="carte-overlay"><h3>Griwichs</h3><span class="bouton-voir">Voir Plus</span></div></a>
+        <a href="bahlawas.html" class="carte"><img src="images/bahlawas.jpg" alt="Baklawas"><div class="carte-overlay"><h3>Baklawas</h3><span class="bouton-voir">Voir Plus</span></div></a>
+        <a href="griwichs.html" class="carte"><img src="images/griwichs.jpg" alt="Chebakias"><div class="carte-overlay"><h3>Chebakias</h3><span class="bouton-voir">Voir Plus</span></div></a>
       </div>
     </section>
   </main>
 
-  <footer><ul class="contact-info"><li>📞 <a href="tel:+33612829293">06.12.82.92.93</a></li><li>📸 <a href="https://instagram.com/latelierdenoraa" target="_blank">Instagram : @latelierdenoraa</a></li><li>✉️ <a href="mailto:latelierdenora.stg@gmail.com">latelierdenora.stg@gmail.com</a></li></ul><br><p>© 2026 L'atelier De NORA</p></footer>
+  <footer>
+      <ul class="contact-info">
+          <li>📞 <a href="tel:+33612829293">06.12.82.92.93</a></li>
+          <li>📸 <a href="https://instagram.com/latelierdenoraa" target="_blank">Instagram : @latelierdenoraa</a></li>
+          <li>✉️ <a href="mailto:latelierdenora.stg@gmail.com">latelierdenora.stg@gmail.com</a></li>
+      </ul>
+      <br>
+      <p>© 2026 L'atelier De NORA</p>
+  </footer>
   <script src="script.js"></script>
 </body>
 </html>
