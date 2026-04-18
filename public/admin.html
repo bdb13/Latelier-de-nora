@@ -34,11 +34,15 @@
     <header class="header-fin">
         <a href="index.html" class="logo-titre">
             <span class="script">L'atelier De</span> <span class="serif">NORA</span>
-            <span style="color: #e74c3c; font-size: 1rem; margin-left: 15px; font-family: sans-serif; font-weight:bold;">(ESPACE ADMIN)</span>
+            <span style="color: #e74c3c; font-size: 1rem; margin-left: 15px; font-family: sans-serif; font-weight:bold;">(ADMIN)</span>
         </a>
         <nav style="display: flex; align-items: center;">
-            <a href="index.html">Retour au site</a>
-            <a href="#" onclick="seDeconnecter()" style="color: #e74c3c;">🚪 Déconnexion</a>
+            <a href="index.html">Accueil</a>
+            <a href="catalogue.html">Nos Douceurs</a>
+            <a href="nos-prestations.html">Nos Prestations</a>
+            <a href="qui-sommes-nous.html">Qui sommes-nous ?</a>
+            <a href="panier.html">Mon Panier</a>
+            <span id="menu-auth-dynamique"></span>
         </nav>
     </header>
 
@@ -148,7 +152,7 @@
             ordersContainer.innerHTML = triees.map(cmd => {
                 let badge = cmd.statut === 'recu' ? 'statut-rouge' : (cmd.statut === 'preparation' ? 'statut-orange' : 'statut-vert');
                 let modeIcon = cmd.methode === 'livraison' ? '🚚 Livraison' : (cmd.methode === 'maison' ? '🏠 Chez Nora' : '🛍️ Stand');
-                let heureText = cmd.methode === 'stand' ? 'Libre (8h-12h)' : (cmd.heure || 'Non précisée');
+                let heureText = cmd.methode === 'stand' ? 'Libre (9h-12h)' : (cmd.heure || 'Non précisée');
                 
                 let notesHtml = (cmd.notes && cmd.notes !== "Aucune précision" && cmd.notes !== "Aucune" && cmd.notes !== "") 
                     ? `<div style="background: #fff3cd; padding: 12px; border-left: 4px solid #ffc107; margin: 15px 0; font-style: italic; border-radius: 4px; color: #856404;">💬 <b>Un petit mot pour Nora :</b> "${cmd.notes}"</div>` : '';
