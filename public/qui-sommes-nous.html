@@ -1,78 +1,55 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Qui sommes-nous ? - L'atelier De NORA</title>
-  <link rel="icon" type="image/png" href="images/logo.png">
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=2">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qui sommes-nous ? - L'atelier de NORA</title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=2">
 </head>
 <body class="catalogue-bg">
+    <header class="header-fin">
+        <a href="index.html" class="logo-titre">
+            <span class="script">L'atelier De</span> <span class="serif">NORA</span>
+        </a>
+        <nav style="display: flex; align-items: center;">
+            <a href="index.html">Accueil</a>
+            <a href="catalogue.html">Nos Douceurs</a>
+            <a href="evenements.html">Événements</a>
+            <a href="panier.html">Mon Panier</a>
+            <span id="menu-auth-dynamique"></span>
+        </nav>
+    </header>
 
-  <header class="header-fin">
-    <a href="index.html" class="logo-titre">
-      <span class="script">L'atelier De</span> <span class="serif">NORA</span>
-    </a>
-    <nav style="display: flex; align-items: center;">
-      <a href="index.html">Accueil</a>
-      <a href="catalogue.html">Nos Douceurs</a>
-      <a href="nos-prestations.html">Nos Prestations</a>
-      <a href="qui-sommes-nous.html" style="font-weight: bold; color: var(--gold-accent);">Qui sommes-nous ?</a>
-      <a href="panier.html">Mon Panier</a>
-      <span id="menu-auth-dynamique"></span>
-    </nav>
-  </header>
-
-  <main style="padding: 40px 20px; max-width: 900px; margin: 0 auto;">
-    
-    <section style="background: white; padding: 40px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; margin-bottom: 50px; border: 2px solid var(--gold-accent);">
-        <h1 style="font-family: 'Playfair Display', serif; color: var(--pine-green); font-size: 2.5rem; margin-bottom: 20px;">L'Héritage d'une Passion</h1>
-        <p style="font-size: 1.15rem; color: #444; line-height: 1.8; text-align: justify;">
-            L'aventure de <strong>L'atelier de NORA</strong> est née d'un héritage précieux : celui d'une mère transmettant son savoir-faire à sa fille. En décidant de suivre le chemin tracé par sa maman, Nora perpétue aujourd'hui la tradition de la véritable <strong>pâtisserie artisanale orientale</strong>. 
-            <br><br>
-            Ici, pas de production industrielle. Chaque douceur est préparée à la main avec amour, patience, et des ingrédients soigneusement sélectionnés pour vous offrir un voyage gustatif authentique. De la finesse de nos cornes de gazelles au croustillant de nos baklawas, c'est tout l'amour d'une recette familiale que vous retrouverez dans nos boîtes.
-        </p>
-    </section>
-
-    <section style="text-align: center;">
-        <h2 style="font-family: 'Playfair Display', serif; color: var(--pine-green); margin-bottom: 30px; font-size: 2rem;">Où nous retrouver ?</h2>
-        
-        <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+    <main style="padding: 20px; min-height: 70vh; display: flex; align-items: center; justify-content: center;">
+        <div style="max-width: 800px; text-align: center; background: white; padding: 50px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #eee;">
+            <h1 class="script" style="font-size: 3.5rem; color: var(--gold-accent); margin-bottom: 20px;">L'Histoire de Nora</h1>
             
-            <div style="background: #fdfcf8; border: 1px solid #ddd; padding: 25px; border-radius: 10px; width: 250px;">
-                <span style="font-size: 2.5rem; display: block; margin-bottom: 10px;">☀️</span>
-                <h3 style="color: var(--pine-green); margin-bottom: 10px;">Marché de Gardanne</h3>
-                <p style="color: #666; font-size: 0.95rem;">Venez découvrir notre stand au cœur de Gardanne.</p>
-            </div>
-
-            <div style="background: #fdfcf8; border: 1px solid #ddd; padding: 25px; border-radius: 10px; width: 250px;">
-                <span style="font-size: 2.5rem; display: block; margin-bottom: 10px;">🌿</span>
-                <h3 style="color: var(--pine-green); margin-bottom: 10px;">Marché d'Aubagne</h3>
-                <p style="color: #666; font-size: 0.95rem;">Retrouvez-nous sous le soleil d'Aubagne pour un moment gourmand.</p>
-            </div>
-
-            <div style="background: #fdfcf8; border: 1px solid #ddd; padding: 25px; border-radius: 10px; width: 250px;">
-                <span style="font-size: 2.5rem; display: block; margin-bottom: 10px;">🍯</span>
-                <h3 style="color: var(--pine-green); margin-bottom: 10px;">Plan-de-Cuques</h3>
-                <p style="color: #666; font-size: 0.95rem;">Vos pâtisseries orientales préparées avec amour pour le marché.</p>
-            </div>
-
+            <p style="font-size: 1.1rem; line-height: 1.8; color: var(--pine-green); text-align: justify; margin-bottom: 20px;">
+                Passionnée par la pâtisserie artisanale depuis toujours, j'ai créé <strong>L'atelier de NORA</strong> pour partager ma passion et mon amour des bonnes choses. 
+                Basée à Gardanne, je travaille chaque jour pour vous offrir des douceurs authentiques, confectionnées à la main avec patience et minutie.
+            </p>
+            
+            <p style="font-size: 1.1rem; line-height: 1.8; color: var(--pine-green); text-align: justify; margin-bottom: 30px;">
+                Du choix rigoureux de mes ingrédients frais jusqu'à la remise en main propre, tout est <strong>100% fait maison</strong>.
+                Que ce soit pour une pause gourmande ou pour célébrer un grand événement, je mets un point d'honneur à ce que chaque bouchée soit un véritable voyage.
+            </p>
+            
+            <h3 style="color: var(--gold-accent); font-family: 'Playfair Display', serif; margin-bottom: 15px;">📍 Retrouvez-moi sur les marchés :</h3>
+            <ul style="list-style: none; padding: 0; color: var(--pine-green); font-size: 1.1rem; display: inline-block; text-align: left;">
+                <li style="margin-bottom: 10px;">🛍️ <b>Mardi :</b> Aubagne</li>
+                <li style="margin-bottom: 10px;">🛍️ <b>Vendredi :</b> Gardanne</li>
+                <li style="margin-bottom: 10px;">🛍️ <b>Samedi :</b> Plan de Cuques</li>
+                <li style="margin-bottom: 10px;">🛍️ <b>Dimanche :</b> Gardanne</li>
+            </ul>
         </div>
-    </section>
+    </main>
 
-  </main>
+    <footer>
+        <p>© 2026 L'atelier de NORA - Artisanat de Gardanne</p>
+    </footer>
 
-  <footer>
-      <ul class="contact-info">
-          <li>📞 <a href="tel:+33612829293">06.12.82.92.93</a></li>
-          <li>📸 <a href="https://instagram.com/latelierdenoraa" target="_blank">Instagram : @latelierdenoraa</a></li>
-          <li>✉️ <a href="mailto:latelierdenora.stg@gmail.com">latelierdenora.stg@gmail.com</a></li>
-      </ul>
-      <br>
-      <p>© 2026 L'atelier De NORA</p>
-  </footer>
-
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
