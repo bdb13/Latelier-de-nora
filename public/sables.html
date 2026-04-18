@@ -8,11 +8,8 @@
   <link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
-
   <header class="header-fin">
-    <a href="index.html" class="logo-titre">
-      <span class="script">L'atelier De</span> <span class="serif">NORA</span>
-    </a>
+    <a href="index.html" class="logo-titre"><span class="script">L'atelier De</span> <span class="serif">NORA</span></a>
     <nav style="display: flex; align-items: center;">
       <a href="index.html">Accueil</a>
       <a href="catalogue.html">Nos Douceurs</a>
@@ -26,14 +23,13 @@
   <main>
     <section class="page-produit">
       <img src="images/sable-confiture.jpg" alt="Sablés Maison" class="image-principale" id="image-sable">
-      
       <div class="details">
         <h2>Sablés Maison</h2>
         <p class="prix-gros">1,50 € l'unité</p>
         
         <div style="margin: 20px 0; padding-bottom: 15px; border-bottom: 1px solid #eee;">
             <label style="display: block; margin-bottom: 8px; font-weight: bold; color: var(--pine-green);">Parfum au choix :</label>
-            <select id="choix-sable" style="width: 100%; padding: 12px; border-radius: 6px; border: 2px solid #ddd; font-family: inherit; font-size: 1rem; color: var(--pine-green);" onchange="mettreAJourSable(this.value)">
+            <select id="choix-sable" style="width: 100%; padding: 12px; border-radius: 6px; border: 2px solid #ddd; font-family: inherit; font-size: 1rem;" onchange="mettreAJourSable(this.value)">
                 <option value="Confiture">Confiture</option>
                 <option value="Nutella">Nutella</option>
                 <option value="Vanille">Vanille</option>
@@ -41,8 +37,7 @@
             </select>
         </div>
 
-        <p><strong>Ingrédients :</strong> Farine, beurre frais, œufs, sucre, et votre garniture préférée.</p>
-        <div class="produit-argument">✨ Un biscuit fondant qui rappelle les goûters de notre enfance. Fait main avec amour.</div>
+        <p><strong>Ingrédients :</strong> Farine, beurre frais, œufs, sucre, garniture au choix.</p>
         
         <div class="action-produit">
             <div class="selecteur-qte">
@@ -50,34 +45,14 @@
                 <input type="number" id="qte-produit" class="input-qte" value="1" min="1" readonly>
                 <button class="btn-qte" onclick="modifierQuantiteProduit(1)">+</button>
             </div>
-            <button onclick="ajouterSableCible()" class="bouton">🛒 Ajouter au panier</button>
+            <button onclick="ajouterSableCible()" class="bouton">🛒 Ajouter</button>
         </div>
-
-      </div>
-    </section>
-
-    <section class="recommandations">
-      <h2>D'autres douceurs...</h2>
-      <div class="grille-produits" style="padding: 20px 0;">
-        <a href="boules-coco.html" class="carte"><img src="images/boules-coco.jpg" alt="Boules coco"><div class="carte-overlay"><h3>Boules coco</h3><span class="bouton-voir">Voir Plus</span></div></a>
-        <a href="cornes-de-gazelles.html" class="carte"><img src="images/cornes.jpg" alt="Cornes"><div class="carte-overlay"><h3>Cornes de gazelles</h3><span class="bouton-voir">Voir Plus</span></div></a>
       </div>
     </section>
   </main>
 
-  <footer>
-      <ul class="contact-info">
-          <li>📞 <a href="tel:+33612829293">06.12.82.92.93</a></li>
-          <li>📸 <a href="https://instagram.com/latelierdenoraa" target="_blank">Instagram : @latelierdenoraa</a></li>
-          <li>✉️ <a href="mailto:latelierdenora.stg@gmail.com">latelierdenora.stg@gmail.com</a></li>
-      </ul>
-      <br>
-      <p>© 2026 L'atelier De NORA</p>
-  </footer>
-
   <script src="script.js"></script>
   <script>
-      // Images associées aux parfums - IL FAUT RENOMMER LES PHOTOS DANS GITHUB COMME CECI
       const imagesSables = {
           "Confiture": "images/sable-confiture.jpg",
           "Nutella": "images/sable-nutella.jpg",
@@ -86,17 +61,13 @@
       };
 
       function mettreAJourSable(type) {
-          const imgEl = document.getElementById('image-sable');
-          imgEl.src = imagesSables[type];
+          document.getElementById('image-sable').src = imagesSables[type];
       }
 
       function ajouterSableCible() {
           const type = document.getElementById('choix-sable').value;
           const qte = parseInt(document.getElementById('qte-produit').value);
-          const nomProduit = "Sablé " + type;
-          const imageProduit = imagesSables[type];
-          
-          ajouterAuPanier(nomProduit, 1.50, imageProduit, qte);
+          ajouterAuPanier("Sablé " + type, 1.50, imagesSables[type], qte);
       }
   </script>
 </body>
