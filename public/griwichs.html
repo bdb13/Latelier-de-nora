@@ -3,18 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Griwichs - L'atelier De NORA</title>
+  <title>Chebakias - L'atelier De NORA</title>
   <link rel="icon" type="image/png" href="images/logo.png">
   <link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
-<header class="header-fin">
+
+  <header class="header-fin">
     <a href="index.html" class="logo-titre">
       <span class="script">L'atelier De</span> <span class="serif">NORA</span>
     </a>
     <nav style="display: flex; align-items: center;">
       <a href="index.html">Accueil</a>
       <a href="catalogue.html">Nos Douceurs</a>
+      <a href="nos-prestations.html">Nos Prestations</a>
+      <a href="qui-sommes-nous.html">Qui sommes-nous ?</a>
       <a href="panier.html">Mon Panier</a>
       <span id="menu-auth-dynamique"></span>
     </nav>
@@ -22,10 +25,10 @@
 
   <main>
     <section class="page-produit">
-      <img src="images/griwichs.jpg" alt="Griwichs" class="image-principale">
+      <img src="images/griwichs.jpg" alt="Chebakias" class="image-principale">
       <div class="details">
-        <h2>Griwichs</h2>
-        <p class="prix-gros">1,00 € l'unité</p>
+        <h2>Chebakias</h2>
+        <p class="prix-gros">1,50 € l'unité</p>
         <p><strong>Ingrédients :</strong> Farine, beurre, œuf, fleur d'oranger, levure chimique, miel.</p>
         <div class="produit-argument">✨ Une magnifique tresse croustillante et légère, délicatement enrobée de miel pur et parsemée de graines de sésame torréfiées.</div>
         
@@ -35,7 +38,7 @@
                 <input type="number" id="qte-produit" class="input-qte" value="1" min="1" readonly>
                 <button class="btn-qte" onclick="modifierQuantiteProduit(1)">+</button>
             </div>
-            <button onclick="ajouterDepuisProduit('Griwichs', 1.00, 'images/griwichs.jpg')" class="bouton">🛒 Ajouter</button>
+            <button onclick="ajouterDepuisProduit('Chebakias', 1.50, 'images/griwichs.jpg')" class="bouton">🛒 Ajouter</button>
         </div>
 
       </div>
@@ -50,7 +53,15 @@
     </section>
   </main>
 
-  <footer><ul class="contact-info"><li>📞 <a href="tel:+33612829293">06.12.82.92.93</a></li><li>📸 <a href="https://instagram.com/latelierdenoraa" target="_blank">Instagram : @latelierdenoraa</a></li><li>✉️ <a href="mailto:latelierdenora.stg@gmail.com">latelierdenora.stg@gmail.com</a></li></ul><br><p>© 2026 L'atelier De NORA</p></footer>
+  <footer>
+      <ul class="contact-info">
+          <li>📞 <a href="tel:+33612829293">06.12.82.92.93</a></li>
+          <li>📸 <a href="https://instagram.com/latelierdenoraa" target="_blank">Instagram : @latelierdenoraa</a></li>
+          <li>✉️ <a href="mailto:latelierdenora.stg@gmail.com">latelierdenora.stg@gmail.com</a></li>
+      </ul>
+      <br>
+      <p>© 2026 L'atelier De NORA</p>
+  </footer>
   <script src="script.js"></script>
 </body>
 </html>
